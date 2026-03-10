@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 
 <title>Finance Tracker</title>
@@ -10,8 +9,8 @@
 <style>
 
 body{
-font-family: Arial;
-background:#f4f6f8;
+font-family:Arial;
+background:#f2f2f2;
 padding:20px;
 }
 
@@ -24,27 +23,24 @@ border-radius:10px;
 box-shadow:0 0 10px rgba(0,0,0,0.1);
 }
 
-h2{
-text-align:center;
-}
-
 input,select,button{
 width:100%;
 padding:10px;
 margin-top:10px;
-border-radius:6px;
+border-radius:5px;
 border:1px solid #ccc;
 }
 
 button{
-background:#007bff;
+background:#28a745;
 color:white;
 border:none;
+font-size:16px;
 cursor:pointer;
 }
 
 button:hover{
-background:#0056b3;
+background:#1e7e34;
 }
 
 </style>
@@ -66,18 +62,18 @@ background:#0056b3;
 
 <select id="transactionType" required>
 
-<option value="">Select Type</option>
-<option value="Income">Income</option>
-<option value="Expense">Expense</option>
-<option value="Self Transfer">Self Transfer</option>
-<option value="Receivable">Receivable (Money Lent)</option>
-<option value="Payable">Payable (Money Owed)</option>
-<option value="EMI Payment">EMI Payment</option>
-<option value="Credit Card Payment">Credit Card Payment</option>
+<option value="">Select</option>
+<option>Income</option>
+<option>Expense</option>
+<option>Self Transfer</option>
+<option>Receivable (Money Lent)</option>
+<option>Payable (Money Owed)</option>
+<option>EMI Payment</option>
+<option>Credit Card Payment</option>
 
 </select>
 
-<button type="submit">Submit Transaction</button>
+<button type="submit">Submit</button>
 
 </form>
 
@@ -85,7 +81,7 @@ background:#0056b3;
 
 <script>
 
-const scriptURL = "https://script.google.com/macros/s/AKfycbzyszcq4kxjgudZes1_dPanF4VG9eLldW1nFz9mqYcGOZToh1vWYU9dy80Y9Ivy_qI/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbywPW8hrfem5Xq8InNK9aN_8BZzbty5FOkJpTnkbP0zZ6EReTWYPQSxZHffjiSEEPFE/exec";
 
 document.getElementById("transactionForm").addEventListener("submit", function(e){
 
@@ -99,38 +95,26 @@ alert("Please fill all fields");
 return;
 }
 
-if (!navigator.geolocation){
-alert("Geolocation is not supported by your browser");
-return;
-}
-
 navigator.geolocation.getCurrentPosition(function(position){
 
 const latitude = position.coords.latitude;
 const longitude = position.coords.longitude;
 
-const data = {
-
+const payload = {
 date: date,
 time: new Date().toLocaleTimeString(),
 location: latitude + "," + longitude,
 latitude: latitude,
 longitude: longitude,
 transactionType: type
-
 };
 
 fetch(scriptURL, {
-
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify(data)
-
+method: "POST",
+mode: "no-cors",
+body: JSON.stringify(payload)
 })
-.then(response => response.text())
-.then(data => {
+.then(() => {
 
 alert("Transaction Saved Successfully ✅");
 
@@ -139,13 +123,14 @@ document.getElementById("transactionForm").reset();
 })
 .catch(error => {
 
-alert("Error submitting form ❌");
+alert("Submission Failed ❌");
 
 console.error(error);
 
 });
 
-}, function(){
+},
+function(){
 
 alert("Please allow location access");
 
@@ -156,5 +141,4 @@ alert("Please allow location access");
 </script>
 
 </body>
-
 </html>
