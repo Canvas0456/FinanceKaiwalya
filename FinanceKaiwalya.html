@@ -81,6 +81,7 @@ color:#777;
 <input type="date" id="date" required>
 
 <label>Transaction Type</label>
+
 <select id="transactionType" required>
 
 <option value="">Select</option>
@@ -100,6 +101,7 @@ color:#777;
 <div id="incomeSection" class="hidden">
 
 <label>Income Category</label>
+
 <select id="incomeCategory">
 
 <option value="">Select Category</option>
@@ -116,7 +118,8 @@ color:#777;
 
 
 <label>Mode of Transaction</label>
-<select id="modeTransaction">
+
+<select id="incomeMode">
 
 <option value="">Select Mode</option>
 <option>UPI</option>
@@ -127,9 +130,10 @@ color:#777;
 
 
 <label>Credited To</label>
+
 <select id="creditedTo">
 
-<option value="">Select Account</option>
+<option value="">Select</option>
 <option>SBI Bank</option>
 <option>Jupiter Bank</option>
 <option>HDFC Bank</option>
@@ -143,10 +147,64 @@ color:#777;
 <div id="walletDescription" class="hidden">
 
 <label>Wallet Name</label>
-<textarea id="additionalDescription"
-placeholder="Enter wallet name"></textarea>
+<textarea id="incomeDescription"></textarea>
 
 </div>
+
+</div>
+
+
+<!-- EXPENSE SECTION -->
+
+<div id="expenseSection" class="hidden">
+
+<label>Expense Category</label>
+
+<select id="expenseCategory">
+
+<option value="">Select Category</option>
+<option>Housing / Living</option>
+<option>Food & Groceries</option>
+<option>Transportation</option>
+<option>Health & Medical</option>
+<option>Shopping / Lifestyle</option>
+<option>Entertainment</option>
+<option>Education / Learning</option>
+<option>Family Support</option>
+<option>Travel</option>
+<option>Business / Work Expenses</option>
+<option>Miscellaneous</option>
+
+</select>
+
+
+<label>Expense Sub-Category</label>
+<select id="expenseSubCategory"></select>
+
+
+<label>Amount (INR)</label>
+<input type="number" id="expenseAmount" min="1">
+
+
+<label>Mode of Transaction</label>
+
+<select id="expenseMode">
+
+<option value="">Select</option>
+<option>Bank Transfer</option>
+<option>Cash</option>
+<option>Debit Card</option>
+<option>Credit Card</option>
+
+</select>
+
+
+<label>Debited From</label>
+<select id="expenseAccount"></select>
+
+
+<label>Additional Description</label>
+<textarea id="expenseDescription"></textarea>
 
 </div>
 
@@ -171,50 +229,184 @@ Page Loaded: <span id="loadTime"></span>
 
 <script>
 
+const scriptURL = "https://script.google.com/macros/s/AKfycbywPW8hrfem5Xq8InNK9aN_8BZzbty5FOkJpTnkbP0zZ6EReTWYPQSxZHffjiSEEPFE/exec";
+
 const form = document.getElementById("transactionForm");
 const typeSelect = document.getElementById("transactionType");
+
 const incomeSection = document.getElementById("incomeSection");
+const expenseSection = document.getElementById("expenseSection");
+
 const walletSection = document.getElementById("walletDescription");
-const creditedTo = document.getElementById("creditedTo");
 
-let locked = false;
+let locked=false;
 
 
-/* SHOW INCOME FIELDS */
+/* SHOW SECTIONS */
 
-typeSelect.addEventListener("change", function(){
+typeSelect.addEventListener("change",function(){
 
-if(this.value === "Income"){
+incomeSection.classList.add("hidden");
+expenseSection.classList.add("hidden");
 
+if(this.value==="Income"){
 incomeSection.classList.remove("hidden");
+}
 
-document.getElementById("incomeCategory").required = true;
-document.getElementById("incomeAmount").required = true;
-document.getElementById("modeTransaction").required = true;
-document.getElementById("creditedTo").required = true;
+if(this.value==="Expense"){
+expenseSection.classList.remove("hidden");
+}
+
+});
+
+
+/* WALLET DESCRIPTION RULE */
+
+document.getElementById("creditedTo")
+.addEventListener("change",function(){
+
+if(this.value==="Digital Wallet"){
+
+walletSection.classList.remove("hidden");
 
 }else{
 
-incomeSection.classList.add("hidden");
+walletSection.classList.add("hidden");
 
 }
 
 });
 
 
-/* WALLET DESCRIPTION REQUIRED */
+/* EXPENSE CATEGORY MAP */
 
-creditedTo.addEventListener("change", function(){
+const expenseMap={
 
-if(this.value === "Digital Wallet"){
+"Housing / Living":[
+"Rent","Maintenance","Electricity Bill","Water Bill",
+"Gas Cylinder","Internet / Broadband","Mobile Recharge",
+"House Repairs","Furniture"
+],
 
-walletSection.classList.remove("hidden");
-document.getElementById("additionalDescription").required = true;
+"Food & Groceries":[
+"Groceries","Fruits & Vegetables","Dairy Products",
+"Snacks","Dining Out","Online Food Orders"
+],
 
-}else{
+"Transportation":[
+"Fuel / Petrol","Public Transport","Cab / Auto",
+"Bike Maintenance","Car Maintenance",
+"Parking Charges","Toll Charges"
+],
 
-walletSection.classList.add("hidden");
-document.getElementById("additionalDescription").required = false;
+"Health & Medical":[
+"Doctor Consultation","Medicines","Medical Tests",
+"Health Insurance","Supplements / Vitamins","Gym / Fitness"
+],
+
+"Shopping / Lifestyle":[
+"Clothes","Shoes","Accessories","Electronics",
+"Personal Care","Salon / Grooming"
+],
+
+"Entertainment":[
+"Movies","OTT Subscriptions","Music Subscription",
+"Games","Outings","Events / Concerts"
+],
+
+"Education / Learning":[
+"Courses","Books","Certifications",
+"Workshops","Software Subscriptions"
+],
+
+"Family Support":[
+"Parents Support","Brother / Sister Support",
+"Household Contribution","Gifts for Family"
+],
+
+"Travel":[
+"Flight Tickets","Train Tickets","Hotel Booking",
+"Local Transport","Trip Activities"
+],
+
+"Business / Work Expenses":[
+"Office Supplies","Work Software","Internet for Work",
+"Marketing","Business Expenses"
+],
+
+"Miscellaneous":[
+"Donations","Penalties","Tips","Unexpected Expenses"
+]
+
+};
+
+
+document.getElementById("expenseCategory")
+.addEventListener("change",function(){
+
+const sub=document.getElementById("expenseSubCategory");
+
+sub.innerHTML="";
+
+expenseMap[this.value].forEach(item=>{
+
+let option=document.createElement("option");
+
+option.text=item;
+
+sub.add(option);
+
+});
+
+});
+
+
+/* MODE BASED ACCOUNT RULE */
+
+document.getElementById("expenseMode")
+.addEventListener("change",function(){
+
+const account=document.getElementById("expenseAccount");
+
+account.innerHTML="";
+
+if(this.value==="Bank Transfer" || this.value==="Debit Card"){
+
+["SBI Bank","Jupiter Bank","HDFC Bank","Kotak Bank","Cash"]
+.forEach(a=>{
+
+let o=document.createElement("option");
+
+o.text=a;
+
+account.add(o);
+
+});
+
+}
+
+if(this.value==="Cash"){
+
+let o=document.createElement("option");
+
+o.text="Cash";
+
+account.add(o);
+
+}
+
+if(this.value==="Credit Card"){
+
+["Kotak Dream CC","Suryoday Bank Credit Card","PhonePe Wish Card"]
+.forEach(a=>{
+
+let o=document.createElement("option");
+
+o.text=a;
+
+account.add(o);
+
+});
 
 }
 
@@ -229,30 +421,41 @@ e.preventDefault();
 
 if(locked) return;
 
-locked = true;
+locked=true;
 
-document.getElementById("submitBtn").disabled = true;
+document.getElementById("submitBtn").disabled=true;
 
 document.getElementById("status").innerHTML="Saving...";
 
 navigator.geolocation.getCurrentPosition(function(position){
 
-const payload = {
+const payload={
 
 date:document.getElementById("date").value,
+
 transactionType:typeSelect.value,
+
 incomeCategory:document.getElementById("incomeCategory").value,
-incomeAmount:document.getElementById("incomeAmount").value,
-mode:document.getElementById("modeTransaction").value,
-creditedTo:document.getElementById("creditedTo").value,
-description:document.getElementById("additionalDescription").value,
+amount:document.getElementById("incomeAmount").value,
+
+expenseCategory:document.getElementById("expenseCategory").value,
+expenseSubCategory:document.getElementById("expenseSubCategory").value,
+expenseAmount:document.getElementById("expenseAmount").value,
+
+mode:document.getElementById("expenseMode").value || document.getElementById("incomeMode").value,
+
+account:document.getElementById("expenseAccount").value || document.getElementById("creditedTo").value,
+
+description:document.getElementById("expenseDescription").value || document.getElementById("incomeDescription").value,
+
 latitude:position.coords.latitude,
 longitude:position.coords.longitude,
+
 time:new Date().toLocaleTimeString()
 
 };
 
-fetch("https://script.google.com/macros/s/AKfycbywPW8hrfem5Xq8InNK9aN_8BZzbty5FOkJpTnkbP0zZ6EReTWYPQSxZHffjiSEEPFE/exec",{
+fetch(scriptURL,{
 method:"POST",
 mode:"no-cors",
 body:JSON.stringify(payload)
@@ -267,9 +470,7 @@ document.getElementById("status").innerHTML="✅ Transaction Saved";
 });
 
 
-/* PAGE LOAD TIME */
-
-document.getElementById("loadTime").innerText =
+document.getElementById("loadTime").innerText=
 new Date().toLocaleString();
 
 </script>
