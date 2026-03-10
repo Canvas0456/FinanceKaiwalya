@@ -34,18 +34,18 @@ padding:10px;
 margin-top:10px;
 border-radius:6px;
 border:1px solid #ccc;
+font-size:14px;
 }
 
 button{
 background:#007bff;
 color:white;
 border:none;
-font-size:16px;
 cursor:pointer;
 }
 
 button:disabled{
-background:gray;
+background:#999;
 cursor:not-allowed;
 }
 
@@ -101,25 +101,27 @@ const form = document.getElementById("transactionForm");
 const submitBtn = document.getElementById("submitBtn");
 const statusDiv = document.getElementById("status");
 
+let isSubmitting = false;
+
 form.addEventListener("submit", function(e){
 
 e.preventDefault();
 
-/* prevent double click */
+/* stop multiple submissions */
+if(isSubmitting) return;
+
+isSubmitting = true;
+
 submitBtn.disabled = true;
 
 statusDiv.innerHTML = "Saving transaction...";
 
+/* collect values */
+
 const date = document.getElementById("date").value;
 const type = document.getElementById("transactionType").value;
 
-if(!date || !type){
-
-statusDiv.innerHTML = "Please fill all fields";
-submitBtn.disabled = false;
-return;
-
-}
+/* capture location */
 
 navigator.geolocation.getCurrentPosition(function(position){
 
@@ -134,6 +136,12 @@ transactionType: type
 
 };
 
+/* clear form immediately */
+
+form.reset();
+
+/* send data */
+
 fetch(scriptURL,{
 method:"POST",
 mode:"no-cors",
@@ -144,21 +152,21 @@ body:JSON.stringify(payload)
 
 statusDiv.innerHTML = "✅ Transaction Saved";
 
-form.reset();
-
 })
 .catch(()=>{
 
-statusDiv.innerHTML = "❌ Error Saving Transaction";
+statusDiv.innerHTML = "❌ Error Saving";
 
 })
-
 .finally(()=>{
 
 setTimeout(()=>{
-submitBtn.disabled=false;
-statusDiv.innerHTML="";
-},1500)
+
+submitBtn.disabled = false;
+isSubmitting = false;
+statusDiv.innerHTML = "";
+
+},2000);
 
 });
 
@@ -166,7 +174,9 @@ statusDiv.innerHTML="";
 function(){
 
 statusDiv.innerHTML = "Location permission required";
-submitBtn.disabled=false;
+
+submitBtn.disabled = false;
+isSubmitting = false;
 
 });
 
