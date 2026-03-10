@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <title>Finance Tracker</title>
@@ -10,7 +11,7 @@
 
 body{
 font-family:Arial;
-background:#f2f2f2;
+background:#f4f6f8;
 padding:20px;
 }
 
@@ -23,24 +24,35 @@ border-radius:10px;
 box-shadow:0 0 10px rgba(0,0,0,0.1);
 }
 
+h2{
+text-align:center;
+}
+
 input,select,button{
 width:100%;
 padding:10px;
 margin-top:10px;
-border-radius:5px;
+border-radius:6px;
 border:1px solid #ccc;
 }
 
 button{
-background:#28a745;
+background:#007bff;
 color:white;
 border:none;
 font-size:16px;
 cursor:pointer;
 }
 
-button:hover{
-background:#1e7e34;
+button:disabled{
+background:gray;
+cursor:not-allowed;
+}
+
+#status{
+margin-top:10px;
+text-align:center;
+font-size:14px;
 }
 
 </style>
@@ -73,7 +85,9 @@ background:#1e7e34;
 
 </select>
 
-<button type="submit">Submit</button>
+<button id="submitBtn" type="submit">Submit Transaction</button>
+
+<div id="status"></div>
 
 </form>
 
@@ -83,56 +97,76 @@ background:#1e7e34;
 
 const scriptURL = "https://script.google.com/macros/s/AKfycbywPW8hrfem5Xq8InNK9aN_8BZzbty5FOkJpTnkbP0zZ6EReTWYPQSxZHffjiSEEPFE/exec";
 
-document.getElementById("transactionForm").addEventListener("submit", function(e){
+const form = document.getElementById("transactionForm");
+const submitBtn = document.getElementById("submitBtn");
+const statusDiv = document.getElementById("status");
+
+form.addEventListener("submit", function(e){
 
 e.preventDefault();
+
+/* prevent double click */
+submitBtn.disabled = true;
+
+statusDiv.innerHTML = "Saving transaction...";
 
 const date = document.getElementById("date").value;
 const type = document.getElementById("transactionType").value;
 
 if(!date || !type){
-alert("Please fill all fields");
+
+statusDiv.innerHTML = "Please fill all fields";
+submitBtn.disabled = false;
 return;
+
 }
 
 navigator.geolocation.getCurrentPosition(function(position){
 
-const latitude = position.coords.latitude;
-const longitude = position.coords.longitude;
-
 const payload = {
+
 date: date,
 time: new Date().toLocaleTimeString(),
-location: latitude + "," + longitude,
-latitude: latitude,
-longitude: longitude,
+location: position.coords.latitude + "," + position.coords.longitude,
+latitude: position.coords.latitude,
+longitude: position.coords.longitude,
 transactionType: type
+
 };
 
-fetch(scriptURL, {
-method: "POST",
-mode: "no-cors",
-body: JSON.stringify(payload)
+fetch(scriptURL,{
+method:"POST",
+mode:"no-cors",
+body:JSON.stringify(payload)
 })
-.then(() => {
 
-alert("Transaction Saved Successfully ✅");
+.then(()=>{
 
-document.getElementById("transactionForm").reset();
+statusDiv.innerHTML = "✅ Transaction Saved";
+
+form.reset();
 
 })
-.catch(error => {
+.catch(()=>{
 
-alert("Submission Failed ❌");
+statusDiv.innerHTML = "❌ Error Saving Transaction";
 
-console.error(error);
+})
+
+.finally(()=>{
+
+setTimeout(()=>{
+submitBtn.disabled=false;
+statusDiv.innerHTML="";
+},1500)
 
 });
 
 },
 function(){
 
-alert("Please allow location access");
+statusDiv.innerHTML = "Location permission required";
+submitBtn.disabled=false;
 
 });
 
@@ -141,4 +175,5 @@ alert("Please allow location access");
 </script>
 
 </body>
+
 </html>
