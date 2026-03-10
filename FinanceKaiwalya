@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Transaction Entry</title>
+</head>
+
+<body>
+
+<h2>Transaction Entry</h2>
+
+<form id="transactionForm">
+
+<label>Date</label>
+<input type="date" id="date" required><br><br>
+
+<label>Transaction Type</label>
+<select id="transactionType" required>
+
+<option value="">Select</option>
+<option>Income</option>
+<option>Expense</option>
+<option>Self Transfer</option>
+<option>Receivable (Money Lent)</option>
+<option>Payable (Money Owed)</option>
+<option>EMI Payment</option>
+<option>Credit Card Payment</option>
+
+</select>
+
+<br><br>
+
+<button type="submit">Submit</button>
+
+</form>
+
+<script>
+
+const scriptURL = "PASTE_YOUR_WEB_APP_URL";
+
+document.getElementById("transactionForm").addEventListener("submit", function(e){
+
+e.preventDefault();
+
+navigator.geolocation.getCurrentPosition(function(position){
+
+let latitude = position.coords.latitude;
+let longitude = position.coords.longitude;
+
+let data = {
+
+date: document.getElementById("date").value,
+
+time: new Date().toLocaleTimeString(),
+
+location: latitude + "," + longitude,
+
+latitude: latitude,
+
+longitude: longitude,
+
+transactionType: document.getElementById("transactionType").value
+
+};
+
+fetch(scriptURL, {
+
+method: "POST",
+
+body: JSON.stringify(data)
+
+})
+.then(res => res.json())
+.then(response => {
+
+alert("Transaction Saved");
+
+});
+
+});
+
+});
+
+</script>
+
+</body>
+</html>
