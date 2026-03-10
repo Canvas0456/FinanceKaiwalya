@@ -2,23 +2,71 @@
 <html>
 
 <head>
-<title>Transaction Entry</title>
+
+<title>Finance Tracker</title>
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+font-family: Arial;
+background:#f4f6f8;
+padding:20px;
+}
+
+.container{
+max-width:400px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+h2{
+text-align:center;
+}
+
+input,select,button{
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button{
+background:#007bff;
+color:white;
+border:none;
+cursor:pointer;
+}
+
+button:hover{
+background:#0056b3;
+}
+
+</style>
+
 </head>
 
 <body>
+
+<div class="container">
 
 <h2>Transaction Entry</h2>
 
 <form id="transactionForm">
 
-<label>Date</label><br>
-<input type="date" id="date" required><br><br>
+<label>Date</label>
+<input type="date" id="date" required>
 
-<label>Transaction Type</label><br>
+<label>Transaction Type</label>
+
 <select id="transactionType" required>
 
-<option value="">Select</option>
+<option value="">Select Type</option>
 <option value="Income">Income</option>
 <option value="Expense">Expense</option>
 <option value="Self Transfer">Self Transfer</option>
@@ -29,11 +77,11 @@
 
 </select>
 
-<br><br>
-
-<button type="submit">Submit</button>
+<button type="submit">Submit Transaction</button>
 
 </form>
+
+</div>
 
 <script>
 
@@ -43,6 +91,19 @@ document.getElementById("transactionForm").addEventListener("submit", function(e
 
 e.preventDefault();
 
+const date = document.getElementById("date").value;
+const type = document.getElementById("transactionType").value;
+
+if(!date || !type){
+alert("Please fill all fields");
+return;
+}
+
+if (!navigator.geolocation){
+alert("Geolocation is not supported by your browser");
+return;
+}
+
 navigator.geolocation.getCurrentPosition(function(position){
 
 const latitude = position.coords.latitude;
@@ -50,29 +111,43 @@ const longitude = position.coords.longitude;
 
 const data = {
 
-date: document.getElementById("date").value,
+date: date,
 time: new Date().toLocaleTimeString(),
 location: latitude + "," + longitude,
 latitude: latitude,
 longitude: longitude,
-transactionType: document.getElementById("transactionType").value
+transactionType: type
 
 };
 
 fetch(scriptURL, {
 
-method: "POST",
-body: JSON.stringify(data)
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify(data)
 
 })
-.then(response => response.json())
+.then(response => response.text())
 .then(data => {
 
-alert("Transaction Saved Successfully");
+alert("Transaction Saved Successfully ✅");
 
 document.getElementById("transactionForm").reset();
 
+})
+.catch(error => {
+
+alert("Error submitting form ❌");
+
+console.error(error);
+
 });
+
+}, function(){
+
+alert("Please allow location access");
 
 });
 
