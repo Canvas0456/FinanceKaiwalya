@@ -13,14 +13,14 @@
         :root {
             --primary: #4361ee;
             --primary-hover: #3a56d4;
-            --bg-body: #f8fafc;
+            --bg-body: #f1f4f9;
             --card-bg: #ffffff;
             --text-main: #1e293b;
             --text-muted: #64748b;
             --border-color: #e2e8f0;
             --success: #10b981;
             --radius: 12px;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
         }
 
         * { box-sizing: border-box; transition: all 0.2s ease; }
@@ -40,167 +40,116 @@
         .app-card {
             background: var(--card-bg);
             width: 100%;
-            max-width: 600px;
-            border-radius: 24px;
+            max-width: 550px;
+            border-radius: 20px;
             box-shadow: var(--shadow);
             overflow: hidden;
-            border: 1px solid var(--border-color);
         }
 
-        /* Header Styling */
         .app-header {
-            background: linear-gradient(135deg, #4361ee, #7209b7);
-            padding: 30px;
-            color: white;
+            background: #fff;
+            padding: 25px 30px;
+            border-bottom: 1px solid var(--border-color);
             text-align: center;
         }
 
-        .app-header h2 { margin: 0; font-size: 24px; font-weight: 700; }
+        .app-header h2 { margin: 0; font-size: 20px; font-weight: 700; color: var(--primary); }
         
-        #clock-container {
-            margin-top: 10px;
-            font-size: 0.9rem;
-            opacity: 0.9;
-            background: rgba(255, 255, 255, 0.15);
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 20px;
-            backdrop-filter: blur(5px);
+        #clock-info {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 5px;
         }
 
-        /* Form Styling */
-        .form-content { padding: 30px; }
+        .form-content { padding: 25px 30px; }
 
         .form-group { margin-bottom: 20px; }
 
         label {
             display: block;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: 700;
             color: var(--text-muted);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 12px 16px;
-            border: 1.5px solid var(--border-color);
+            padding: 12px;
+            border: 1px solid var(--border-color);
             border-radius: var(--radius);
-            font-size: 15px;
-            outline: none;
-            background: #fff;
+            font-size: 14px;
+            background: #fcfdfe;
         }
 
-        input:focus, select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
-        }
+        input:focus { border-color: var(--primary); outline: none; background: #fff; }
 
         .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
-        /* Customizing Select2 to look modern */
+        /* Select2 Modern Overrides */
         .select2-container--default .select2-selection--single {
-            height: 45px;
-            border: 1.5px solid var(--border-color);
+            height: 44px;
+            border: 1px solid var(--border-color);
             border-radius: var(--radius);
             display: flex;
             align-items: center;
         }
 
-        /* Action Button */
         .btn-submit {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 16px;
+            padding: 14px;
             border-radius: var(--radius);
             font-size: 16px;
             font-weight: 600;
             width: 100%;
             cursor: pointer;
-            margin-top: 20px;
-            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+            margin-top: 10px;
         }
 
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            background: var(--primary-hover);
-        }
+        .btn-submit:hover { background: var(--primary-hover); transform: translateY(-1px); }
 
-        /* Success Message */
         .toast {
             position: fixed;
             top: 20px;
-            right: 20px;
             background: var(--success);
             color: white;
-            padding: 15px 25px;
-            border-radius: 12px;
+            padding: 12px 24px;
+            border-radius: 50px;
             display: none;
-            z-index: 1000;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .hidden { display: none; }
-        .footer { text-align: center; margin-top: 20px; color: var(--text-muted); font-size: 12px; }
+        .footer { text-align: center; padding: 20px; font-size: 11px; color: var(--text-muted); }
 
-        /* Responsive */
-        @media (max-width: 480px) {
-            .row { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 480px) { .row { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-<div id="successToast" class="toast">
-    <i class="fas fa-check-circle"></i> Transaction Saved Successfully!
-</div>
+<div id="successToast" class="toast">Transaction Saved!</div>
 
 <div class="app-card">
     <div class="app-header">
-        <h2>FinanceFlow</h2>
-        <div id="clock-container">
-            <i class="far fa-calendar-alt"></i> <span id="dayDate"></span> | 
-            <i class="far fa-clock"></i> <span id="clock"></span>
+        <h2>Finance Entry</h2>
+        <div id="clock-info">
+            <span id="dayDate"></span> • <span id="clock"></span>
         </div>
     </div>
 
     <div class="form-content">
         <form id="txnForm">
+            <input type="hidden" name="time" id="timeField">
+            <input type="hidden" name="location" id="locationField">
+
             <div class="row">
                 <div class="form-group">
-                    <label>Date</label>
+                    <label>Transaction Date</label>
                     <input type="date" name="date" id="dateField" required>
-                </div>
-                <div class="form-group">
-                    <label>Time</label>
-                    <input type="text" name="time" id="timeField" readonly style="background: #f1f5f9;">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label><i class="fas fa-map-marker-alt"></i> Location</label>
-                <input type="text" name="location" id="locationField" readonly placeholder="Fetching GPS..." style="background: #f1f5f9;">
-            </div>
-
-            <div class="row">
-                <div class="form-group">
-                    <label>Type</label>
-                    <select id="type" name="type" required>
-                        <option value="">Select Type</option>
-                        <option>Income</option>
-                        <option>Expense</option>
-                        <option>Self Transfer</option>
-                        <option>Receivable</option>
-                        <option>Payable</option>
-                    </select>
                 </div>
                 <div class="form-group">
                     <label>Amount (₹)</label>
@@ -209,13 +158,26 @@
             </div>
 
             <div class="form-group">
-                <label>Category</label>
-                <select id="category" name="category" style="width:100%"></select>
+                <label>Transaction Type</label>
+                <select id="type" name="type" required>
+                    <option value="">Select Type</option>
+                    <option>Income</option>
+                    <option>Expense</option>
+                    <option>Self Transfer</option>
+                    <option>Receivable</option>
+                    <option>Payable</option>
+                </select>
             </div>
 
-            <div class="form-group">
-                <label>Sub Category</label>
-                <select id="subcategory" name="subcategory" style="width:100%"></select>
+            <div class="row">
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="category" name="category" style="width:100%"></select>
+                </div>
+                <div class="form-group">
+                    <label>Sub Category</label>
+                    <select id="subcategory" name="subcategory" style="width:100%"></select>
+                </div>
             </div>
 
             <div id="personField" class="form-group hidden">
@@ -223,7 +185,7 @@
                 <input type="text" name="person" placeholder="Enter name">
             </div>
 
-            <div class="row">
+            <div class="row" id="accountRow">
                 <div id="fromField" class="form-group">
                     <label>From Account</label>
                     <select name="from">
@@ -231,6 +193,8 @@
                         <option>SBI Bank</option>
                         <option>Jupiter Bank</option>
                         <option>HDFC Bank</option>
+                        <option>Kotak Bank</option>
+                        <option>IDFC Bank</option>
                     </select>
                 </div>
                 <div id="toField" class="form-group">
@@ -240,12 +204,14 @@
                         <option>SBI Bank</option>
                         <option>Jupiter Bank</option>
                         <option>HDFC Bank</option>
+                        <option>Kotak Bank</option>
+                        <option>IDFC Bank</option>
                     </select>
                 </div>
             </div>
 
             <div id="creditCardField" class="form-group hidden">
-                <label>Credit Card</label>
+                <label>Select Credit Card</label>
                 <select name="creditcard">
                     <option>Suryoday Bank CC</option>
                     <option>PhonePe Wish CC</option>
@@ -254,114 +220,122 @@
             </div>
 
             <div id="emiField" class="form-group hidden">
-                <label>EMI Name</label>
+                <label>EMI Details</label>
                 <select name="emi">
                     <option>HDFC Personal Loan</option>
                     <option>iPhone EMI</option>
+                    <option>ExcelR Course EMI</option>
+                    <option>Bike Helmet EMI</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label>Description</label>
-                <textarea name="notes" rows="2" placeholder="Add a note..."></textarea>
+                <label>Description / Notes</label>
+                <textarea name="notes" rows="2" placeholder="Note down specifics..."></textarea>
             </div>
 
-            <button type="submit" class="btn-submit">
-                <i class="fas fa-paper-plane"></i> Save Transaction
-            </button>
+            <button type="submit" class="btn-submit">Save Transaction</button>
         </form>
     </div>
+    <div class="footer">Copyright @ KaiwalyaMuley</div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
-    // Configuration Data (Kept from your original logic)
-    const data = {
+    // Full Data Object including all your categories
+    const transactionData = {
         Income: {
-            "Salary": ["Salary", "Bonus", "Incentives"],
-            "Freelance": ["Projects", "Consulting"],
-            "Investment": ["Dividends", "FD Interest"],
-            "Other": ["Misc Income"]
+            "Salary": ["Salary", "Bonus", "Incentives", "Overtime"],
+            "Freelance": ["Freelance Projects", "Consulting", "Part Time Work", "Online Services"],
+            "Business": ["Product Sales", "Service Revenue", "Online Store Sales", "Commission Income"],
+            "Investment": ["Stock Dividends", "Mutual Fund Dividends", "FD Interest", "Savings Account Interest", "Bond Interest"],
+            "Rental": ["Rent Received", "Parking Rent"],
+            "Rewards": ["Credit Card Cashback", "UPI Cashback", "Reward Points Redemption"],
+            "Refund": ["Purchase Refund", "Expense Reimbursement", "Insurance Claim", "Tax Refund"],
+            "Gift": ["Gifts Received", "Family Support", "Prize / Lottery"],
+            "Other": ["Miscellaneous Income"]
         },
         Expense: {
-            "Housing": ["Rent", "Electricity", "Water"],
-            "Food": ["Groceries", "Dining Out", "Swiggy/Zomato"],
-            "Transportation": ["Fuel", "Cab", "Maintenance"],
-            "Financial": ["Credit Card Payment", "Loan EMI"],
-            "Other": ["Miscellaneous"]
+            "Housing": ["Rent", "Maintenance Charges", "Electricity Bill", "Water Bill", "Gas Cylinder", "House Repairs", "Furniture"],
+            "Utilities": ["Mobile Recharge", "Internet / Broadband", "Software Subscription"],
+            "Food": ["Groceries", "Fruits & Vegetables", "Dairy Products", "Snacks", "Dining Out", "Online Food Orders"],
+            "Transportation": ["Fuel", "Public Transport", "Cab / Auto", "Parking Charges", "Toll Charges", "Bike Maintenance", "Car Maintenance"],
+            "Health": ["Doctor Consultation", "Medicines", "Medical Tests", "Health Insurance", "Supplements", "Gym / Fitness"],
+            "Shopping": ["Clothes", "Shoes", "Accessories", "Electronics", "Personal Care", "Salon / Grooming"],
+            "Entertainment": ["Movies", "OTT Subscriptions", "Music Subscription", "Games", "Outings"],
+            "Education": ["Courses", "Books", "Certifications", "Workshops"],
+            "Financial": ["Credit Card Payment", "Loan EMI", "Interest Paid", "Bank Charges", "Late Fees"],
+            "Family": ["Parents Support", "Brother Support", "Family Gifts"],
+            "Travel": ["Flight Tickets", "Train Tickets", "Hotel Booking", "Local Transport", "Trip Activities"],
+            "Business": ["Office Supplies", "Marketing", "Work Software", "Business Expenses"],
+            "Donation": ["Charity", "Religious Donations"],
+            "Other": ["Miscellaneous Expense", "Unexpected Expense", "Penalties", "Tips"]
         }
     };
 
     $(document).ready(function() {
-        // Initialize Select2
         $('#category, #subcategory').select2();
 
-        // Clock & Date Logic
         function updateClock() {
             const now = new Date();
-            const dateOpts = { weekday: 'short', month: 'short', day: 'numeric' };
-            $('#dayDate').text(now.toLocaleDateString('en-IN', dateOpts));
-            $('#clock').text(now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-            $('#timeField').val(now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }));
-            
-            if(!$('#dateField').val()) {
-                const today = now.toISOString().split('T')[0];
-                $('#dateField').val(today);
-            }
+            $('#dayDate').text(now.toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric' }));
+            $('#clock').text(now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }));
+            $('#timeField').val(now.toLocaleTimeString('en-IN'));
+            if(!$('#dateField').val()) $('#dateField').val(now.toISOString().split('T')[0]);
         }
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Location Logic
+        // Background Location Fetching
         if(navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(pos => {
-                $('#locationField').val(`${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`);
+            navigator.geolocation.getCurrentPosition(p => {
+                $('#locationField').val(p.coords.latitude.toFixed(5) + ", " + p.coords.longitude.toFixed(5));
             });
         }
 
-        // Logic for Field Toggling
+        // Dropdown Logic
         $('#type').change(function() {
-            const val = $(this).val();
+            const type = $(this).val();
             $('#category').empty().append('<option value="">Select Category</option>');
-            
-            if(data[val]) {
-                Object.keys(data[val]).forEach(cat => {
+            $('#subcategory').empty();
+
+            if(transactionData[type]) {
+                Object.keys(transactionData[type]).forEach(cat => {
                     $('#category').append(new Option(cat, cat));
                 });
             }
 
-            // UI Adjustments based on type
+            // Field visibility
             $("#fromField, #toField, #personField").hide();
-            if(val === "Income") $("#toField").show();
-            else if(val === "Expense") $("#fromField").show();
-            else if(val === "Self Transfer") { $("#fromField").show(); $("#toField").show(); }
-            else if(val === "Receivable") { $("#toField").show(); $("#personField").show(); }
-            else if(val === "Payable") { $("#fromField").show(); $("#personField").show(); }
+            if(type === "Income") $("#toField").show();
+            else if(type === "Expense") $("#fromField").show();
+            else if(type === "Self Transfer") { $("#fromField, #toField").show(); }
+            else if(type === "Receivable") { $("#toField, #personField").show(); }
+            else if(type === "Payable") { $("#fromField, #personField").show(); }
         });
 
         $('#category').change(function() {
             const type = $('#type').val();
             const cat = $(this).val();
             $('#subcategory').empty();
-            if(data[type] && data[type][cat]) {
-                data[type][cat].forEach(sub => $('#subcategory').append(new Option(sub, sub)));
+            if(transactionData[type] && transactionData[type][cat]) {
+                transactionData[type][cat].forEach(sub => $('#subcategory').append(new Option(sub, sub)));
             }
         });
 
         $('#subcategory').change(function() {
             const sub = $(this).val();
-            sub === "Credit Card Payment" ? $("#creditCardField").removeClass("hidden") : $("#creditCardField").addClass("hidden");
-            sub === "Loan EMI" ? $("#emiField").removeClass("hidden") : $("#emiField").addClass("hidden");
+            sub === "Credit Card Payment" ? $("#creditCardField").show() : $("#creditCardField").hide();
+            sub === "Loan EMI" ? $("#emiField").show() : $("#emiField").hide();
         });
 
-        // Submit Handler
         $('#txnForm').submit(function(e) {
             e.preventDefault();
-            $('#successToast').fadeIn().delay(3000).fadeOut();
+            $('#successToast').fadeIn().delay(2000).fadeOut();
             this.reset();
-            updateClock();
+            $('#type').val('').trigger('change');
         });
     });
 </script>
