@@ -1,63 +1,103 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <title>Finance Transaction Entry</title>
 
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <style>
 
 body{
-font-family:Arial;
-background:#f4f6f9;
+font-family:Segoe UI;
+background:#f2f4f8;
 padding:30px;
 }
 
 .container{
-background:white;
-padding:25px;
-border-radius:10px;
-max-width:700px;
+
+max-width:750px;
 margin:auto;
-box-shadow:0 0 10px rgba(0,0,0,0.1);
+background:white;
+padding:30px;
+border-radius:12px;
+box-shadow:0 10px 25px rgba(0,0,0,0.1);
+
 }
 
 h2{
 text-align:center;
-margin-bottom:20px;
+margin-bottom:25px;
 }
 
 label{
-font-weight:bold;
+font-weight:600;
 }
 
 input,select,textarea{
+
 width:100%;
-padding:8px;
-margin-top:5px;
-margin-bottom:15px;
-border:1px solid #ccc;
+padding:10px;
+margin-top:6px;
+margin-bottom:18px;
 border-radius:6px;
+border:1px solid #ccc;
+font-size:14px;
+
 }
 
 button{
-background:#2b7cff;
+
+background:#0066ff;
 color:white;
 padding:12px;
 border:none;
-border-radius:6px;
-width:100%;
+border-radius:8px;
 font-size:16px;
+width:100%;
 cursor:pointer;
+
 }
 
 button:hover{
-background:#1f5fd4;
+
+background:#004bcc;
+
+}
+
+.row{
+
+display:flex;
+gap:15px;
+
+}
+
+.col{
+
+flex:1;
+
 }
 
 .hidden{
+
 display:none;
+
+}
+
+.success{
+
+text-align:center;
+color:green;
+font-weight:bold;
+display:none;
+
 }
 
 </style>
@@ -70,18 +110,31 @@ display:none;
 
 <h2>Finance Transaction Entry</h2>
 
+<div class="success" id="successMsg">
+Transaction Saved Successfully
+</div>
+
 <form id="txnForm">
 
+<div class="row">
+
+<div class="col">
 <label>Date</label>
 <input type="date" name="date" required>
+</div>
 
+<div class="col">
 <label>Time</label>
-<input type="time" name="time">
+<input type="time" name="time" id="timeField">
+</div>
+
+</div>
 
 <label>Location</label>
 <input type="text" name="location">
 
 <label>Transaction Type</label>
+
 <select id="type" name="type" required>
 
 <option value="">Select</option>
@@ -94,13 +147,24 @@ display:none;
 </select>
 
 <label>Category</label>
-<select id="category" name="category" style="width:100%"></select>
+
+<select id="category" style="width:100%"></select>
 
 <label>Sub Category</label>
-<select id="subcategory" name="subcategory" style="width:100%"></select>
 
-<label>Amount</label>
+<select id="subcategory" style="width:100%"></select>
+
+<label>Amount (₹)</label>
+
 <input type="number" name="amount" required>
+
+<div id="personField" class="hidden">
+
+<label>Person Name</label>
+
+<input type="text" name="person">
+
+</div>
 
 <div id="fromField">
 
@@ -166,18 +230,14 @@ display:none;
 </div>
 
 <label>Description</label>
+
 <textarea name="notes"></textarea>
 
-<button type="submit">Submit Transaction</button>
+<button type="submit">Save Transaction</button>
 
 </form>
 
 </div>
-
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
 <script>
@@ -186,34 +246,62 @@ $('#category').select2({placeholder:"Search Category"});
 $('#subcategory').select2({placeholder:"Search Sub Category"});
 
 
-var data = {
+document.getElementById("timeField").value =
+new Date().toTimeString().slice(0,5);
+
+
+var data={
 
 Income:{
+
 "Salary":["Salary","Bonus","Incentives","Overtime"],
+
 "Freelance":["Freelance Projects","Consulting","Part Time Work","Online Services"],
+
 "Business":["Product Sales","Service Revenue","Online Store Sales","Commission Income"],
+
 "Investment":["Stock Dividends","Mutual Fund Dividends","FD Interest","Savings Account Interest","Bond Interest"],
+
 "Rental":["Rent Received","Parking Rent"],
+
 "Rewards":["Credit Card Cashback","UPI Cashback","Reward Points Redemption"],
+
 "Refund":["Purchase Refund","Expense Reimbursement","Insurance Claim","Tax Refund"],
+
 "Gift":["Gifts Received","Family Support","Prize / Lottery"],
+
 "Other":["Miscellaneous Income"]
+
 },
 
 Expense:{
+
 "Housing":["Rent","Maintenance Charges","Electricity Bill","Water Bill","Gas Cylinder","House Repairs","Furniture"],
+
 "Utilities":["Mobile Recharge","Internet / Broadband","Software Subscription"],
+
 "Food":["Groceries","Fruits & Vegetables","Dairy Products","Snacks","Dining Out","Online Food Orders"],
+
 "Transportation":["Fuel","Public Transport","Cab / Auto","Parking Charges","Toll Charges","Bike Maintenance","Car Maintenance"],
+
 "Health":["Doctor Consultation","Medicines","Medical Tests","Health Insurance","Supplements","Gym / Fitness"],
+
 "Shopping":["Clothes","Shoes","Accessories","Electronics","Personal Care","Salon / Grooming"],
+
 "Entertainment":["Movies","OTT Subscriptions","Music Subscription","Games","Outings"],
+
 "Education":["Courses","Books","Certifications","Workshops"],
+
 "Financial":["Credit Card Payment","Loan EMI","Interest Paid","Bank Charges","Late Fees"],
+
 "Family":["Parents Support","Brother Support","Family Gifts"],
+
 "Travel":["Flight Tickets","Train Tickets","Hotel Booking","Local Transport","Trip Activities"],
+
 "Business":["Office Supplies","Marketing","Work Software","Business Expenses"],
+
 "Donation":["Charity","Religious Donations"],
+
 "Other":["Miscellaneous Expense","Unexpected Expense","Penalties","Tips"]
 
 }
@@ -223,7 +311,7 @@ Expense:{
 
 $('#type').change(function(){
 
-var type = $(this).val();
+var type=$(this).val();
 
 $('#category').empty();
 $('#subcategory').empty();
@@ -238,13 +326,53 @@ $('#category').append(new Option(cat,cat));
 
 }
 
+if(type=="Income"){
+
+$("#fromField").hide();
+$("#toField").show();
+$("#personField").hide();
+
+}
+
+else if(type=="Expense"){
+
+$("#fromField").show();
+$("#toField").hide();
+$("#personField").hide();
+
+}
+
+else if(type=="Self Transfer"){
+
+$("#fromField").show();
+$("#toField").show();
+$("#personField").hide();
+
+}
+
+else if(type=="Receivable"){
+
+$("#fromField").hide();
+$("#toField").show();
+$("#personField").show();
+
+}
+
+else if(type=="Payable"){
+
+$("#fromField").show();
+$("#toField").hide();
+$("#personField").show();
+
+}
+
 });
 
 
 $('#category').change(function(){
 
-var type = $('#type').val();
-var cat = $(this).val();
+var type=$('#type').val();
+var cat=$(this).val();
 
 $('#subcategory').empty();
 
@@ -259,15 +387,17 @@ $('#subcategory').append(new Option(sub,sub));
 
 $('#subcategory').change(function(){
 
-var sub = $(this).val();
+var sub=$(this).val();
 
 if(sub=="Credit Card Payment")
+
 $("#creditCardField").removeClass("hidden");
 else
 $("#creditCardField").addClass("hidden");
 
 
 if(sub=="Loan EMI")
+
 $("#emiField").removeClass("hidden");
 else
 $("#emiField").addClass("hidden");
@@ -275,34 +405,25 @@ $("#emiField").addClass("hidden");
 });
 
 
-$('#type').change(function(){
+$('#txnForm').submit(function(e){
 
-var type = $(this).val();
+e.preventDefault();
 
-if(type=="Income"){
+$('#successMsg').show();
 
-$("#fromField").hide();
-$("#toField").show();
+setTimeout(function(){
 
-}
+$('#successMsg').hide();
 
-else if(type=="Expense"){
+},3000);
 
-$("#fromField").show();
-$("#toField").hide();
-
-}
-
-else{
-
-$("#fromField").show();
-$("#toField").show();
-
-}
+this.reset();
 
 });
+
 
 </script>
 
 </body>
+
 </html>
