@@ -1,32 +1,26 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 
-<title>Finance Tracker</title>
+<title>Finance Transaction Entry</title>
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
 
 <style>
 
 body{
-font-family:'Segoe UI',sans-serif;
-background:#0f172a;
-color:white;
-margin:0;
-padding:20px;
+font-family:Arial;
+background:#f4f6f9;
+padding:30px;
 }
 
 .container{
-max-width:420px;
+background:white;
+padding:25px;
+border-radius:10px;
+max-width:700px;
 margin:auto;
-}
-
-.card{
-background:#1e293b;
-padding:20px;
-border-radius:14px;
-box-shadow:0 10px 25px rgba(0,0,0,0.35);
+box-shadow:0 0 10px rgba(0,0,0,0.1);
 }
 
 h2{
@@ -35,54 +29,35 @@ margin-bottom:20px;
 }
 
 label{
-font-size:13px;
-color:#cbd5f5;
+font-weight:bold;
 }
 
 input,select,textarea{
 width:100%;
-padding:12px;
-margin-top:6px;
-margin-bottom:14px;
-border-radius:10px;
-border:none;
-background:#334155;
-color:white;
+padding:8px;
+margin-top:5px;
+margin-bottom:15px;
+border:1px solid #ccc;
+border-radius:6px;
 }
 
 button{
-width:100%;
-padding:14px;
-background:#3b82f6;
-border:none;
-border-radius:10px;
-font-size:16px;
+background:#2b7cff;
 color:white;
+padding:12px;
+border:none;
+border-radius:6px;
+width:100%;
+font-size:16px;
 cursor:pointer;
 }
 
 button:hover{
-background:#2563eb;
-}
-
-button:disabled{
-background:#64748b;
+background:#1f5fd4;
 }
 
 .hidden{
 display:none;
-}
-
-.footer{
-text-align:center;
-margin-top:15px;
-font-size:11px;
-color:#94a3b8;
-}
-
-#status{
-text-align:center;
-margin-top:10px;
 }
 
 </style>
@@ -93,107 +68,139 @@ margin-top:10px;
 
 <div class="container">
 
-<div class="card">
+<h2>Finance Transaction Entry</h2>
 
-<h2>Finance Tracker</h2>
-
-<form id="form">
+<form id="txnForm">
 
 <label>Date</label>
-<input type="date" id="date" required>
+<input type="date" name="date" required>
+
+<label>Time</label>
+<input type="time" name="time">
+
+<label>Location</label>
+<input type="text" name="location">
 
 <label>Transaction Type</label>
-
-<select id="type" required>
+<select id="type" name="type" required>
 
 <option value="">Select</option>
-<option value="Income">Income</option>
-<option value="Expense">Expense</option>
-<option value="Transfer">Self Transfer</option>
+<option>Income</option>
+<option>Expense</option>
+<option>Self Transfer</option>
+<option>Receivable</option>
+<option>Payable</option>
 
 </select>
 
-
-<div id="categorySection" class="hidden">
-
 <label>Category</label>
-<select id="category"></select>
+<select id="category" name="category" style="width:100%"></select>
 
 <label>Sub Category</label>
-<select id="subcategory"></select>
+<select id="subcategory" name="subcategory" style="width:100%"></select>
 
-</div>
+<label>Amount</label>
+<input type="number" name="amount" required>
 
-
-<div id="accountSection" class="hidden">
+<div id="fromField">
 
 <label>From Account</label>
-<select id="fromAccount"></select>
 
-<label>To Account</label>
-<select id="toAccount"></select>
+<select name="from">
+
+<option>Cash</option>
+<option>SBI Bank</option>
+<option>Jupiter Bank</option>
+<option>HDFC Bank</option>
+<option>Kotak Bank</option>
+<option>IDFC Bank</option>
+
+</select>
 
 </div>
 
+<div id="toField">
 
-<label>Amount (INR)</label>
-<input type="number" id="amount" min="1" required>
+<label>To Account</label>
+
+<select name="to">
+
+<option>Cash</option>
+<option>SBI Bank</option>
+<option>Jupiter Bank</option>
+<option>HDFC Bank</option>
+<option>Kotak Bank</option>
+<option>IDFC Bank</option>
+
+</select>
+
+</div>
+
+<div id="creditCardField" class="hidden">
+
+<label>Credit Card</label>
+
+<select name="creditcard">
+
+<option>Suryoday Bank CC</option>
+<option>PhonePe Wish CC</option>
+<option>Kotak Dream CC</option>
+
+</select>
+
+</div>
+
+<div id="emiField" class="hidden">
+
+<label>EMI Name</label>
+
+<select name="emi">
+
+<option>HDFC Personal Loan</option>
+<option>iPhone EMI</option>
+<option>ExcelR Course EMI</option>
+<option>Bike Helmet EMI</option>
+
+</select>
+
+</div>
 
 <label>Description</label>
-<textarea id="description"></textarea>
+<textarea name="notes"></textarea>
 
-<button id="submitBtn">Save Transaction</button>
-
-<div id="status"></div>
+<button type="submit">Submit Transaction</button>
 
 </form>
 
 </div>
 
-<div class="footer">
 
-Finance Tracker • Modern UI
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-</div>
-
-</div>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
 <script>
 
-const scriptURL="https://script.google.com/macros/s/AKfycbywPW8hrfem5Xq8InNK9aN_8BZzbty5FOkJpTnkbP0zZ6EReTWYPQSxZHffjiSEEPFE/exec";
-
-let locked=false;
-
-/* ACCOUNT LIST */
-
-const accounts=[
-"SBI Bank",
-"Jupiter Bank",
-"HDFC Bank",
-"Kotak Bank",
-"IDFC Bank",
-"Suryoday Bank CC",
-"PhonePe Wish CC",
-"Kotak Dream CC",
-"Cash"
-];
+$('#category').select2({placeholder:"Search Category"});
+$('#subcategory').select2({placeholder:"Search Sub Category"});
 
 
-/* CATEGORY MAPS */
+var data = {
 
-const incomeCategories={
+Income:{
 "Salary":["Salary","Bonus","Incentives","Overtime"],
 "Freelance":["Freelance Projects","Consulting","Part Time Work","Online Services"],
+"Business":["Product Sales","Service Revenue","Online Store Sales","Commission Income"],
 "Investment":["Stock Dividends","Mutual Fund Dividends","FD Interest","Savings Account Interest","Bond Interest"],
 "Rental":["Rent Received","Parking Rent"],
 "Rewards":["Credit Card Cashback","UPI Cashback","Reward Points Redemption"],
 "Refund":["Purchase Refund","Expense Reimbursement","Insurance Claim","Tax Refund"],
 "Gift":["Gifts Received","Family Support","Prize / Lottery"],
 "Other":["Miscellaneous Income"]
-};
+},
 
-const expenseCategories={
+Expense:{
 "Housing":["Rent","Maintenance Charges","Electricity Bill","Water Bill","Gas Cylinder","House Repairs","Furniture"],
 "Utilities":["Mobile Recharge","Internet / Broadband","Software Subscription"],
 "Food":["Groceries","Fruits & Vegetables","Dairy Products","Snacks","Dining Out","Online Food Orders"],
@@ -208,166 +215,90 @@ const expenseCategories={
 "Business":["Office Supplies","Marketing","Work Software","Business Expenses"],
 "Donation":["Charity","Religious Donations"],
 "Other":["Miscellaneous Expense","Unexpected Expense","Penalties","Tips"]
+
+}
+
 };
 
 
-/* ELEMENTS */
+$('#type').change(function(){
 
-const type=document.getElementById("type");
-const category=document.getElementById("category");
-const sub=document.getElementById("subcategory");
+var type = $(this).val();
 
-const categorySection=document.getElementById("categorySection");
-const accountSection=document.getElementById("accountSection");
+$('#category').empty();
+$('#subcategory').empty();
 
+if(data[type]){
 
-/* TYPE CHANGE */
+Object.keys(data[type]).forEach(function(cat){
 
-type.addEventListener("change",()=>{
-
-categorySection.classList.add("hidden");
-accountSection.classList.add("hidden");
-
-category.innerHTML="";
-sub.innerHTML="";
-
-if(type.value==="Income"){
-
-categorySection.classList.remove("hidden");
-accountSection.classList.remove("hidden");
-
-Object.keys(incomeCategories).forEach(c=>{
-let o=document.createElement("option");
-o.text=c;
-category.add(o);
-});
-
-populateAccounts();
-
-}
-
-if(type.value==="Expense"){
-
-categorySection.classList.remove("hidden");
-accountSection.classList.remove("hidden");
-
-Object.keys(expenseCategories).forEach(c=>{
-let o=document.createElement("option");
-o.text=c;
-category.add(o);
-});
-
-populateAccounts();
-
-}
-
-if(type.value==="Transfer"){
-
-accountSection.classList.remove("hidden");
-
-populateAccounts();
-
-}
-
-});
-
-
-/* SUBCATEGORY */
-
-category.addEventListener("change",()=>{
-
-sub.innerHTML="";
-
-let map=(type.value==="Income")?incomeCategories:expenseCategories;
-
-(map[category.value]||[]).forEach(s=>{
-
-let o=document.createElement("option");
-o.text=s;
-sub.add(o);
-
-});
-
-});
-
-
-/* POPULATE ACCOUNTS */
-
-function populateAccounts(){
-
-let from=document.getElementById("fromAccount");
-let to=document.getElementById("toAccount");
-
-from.innerHTML="";
-to.innerHTML="";
-
-accounts.forEach(a=>{
-
-let o1=document.createElement("option");
-o1.text=a;
-from.add(o1);
-
-let o2=document.createElement("option");
-o2.text=a;
-to.add(o2);
+$('#category').append(new Option(cat,cat));
 
 });
 
 }
 
-
-/* SUBMIT */
-
-document.getElementById("form").addEventListener("submit",function(e){
-
-e.preventDefault();
-
-if(locked) return;
-
-locked=true;
-
-document.getElementById("submitBtn").disabled=true;
-
-document.getElementById("status").innerText="Saving...";
-
-navigator.geolocation.getCurrentPosition(function(pos){
-
-const payload={
-
-date:document.getElementById("date").value,
-transactionType:type.value,
-
-category:category.value,
-subcategory:sub.value,
-
-amount:document.getElementById("amount").value,
-
-fromAccount:document.getElementById("fromAccount").value,
-toAccount:document.getElementById("toAccount").value,
-
-description:document.getElementById("description").value,
-
-latitude:pos.coords.latitude,
-longitude:pos.coords.longitude,
-
-time:new Date().toLocaleTimeString()
-
-};
-
-fetch(scriptURL,{
-method:"POST",
-mode:"no-cors",
-body:JSON.stringify(payload)
 });
 
-document.getElementById("status").innerText="Transaction Saved";
 
-document.getElementById("form").reset();
+$('#category').change(function(){
 
-locked=false;
-document.getElementById("submitBtn").disabled=false;
+var type = $('#type').val();
+var cat = $(this).val();
+
+$('#subcategory').empty();
+
+data[type][cat].forEach(function(sub){
+
+$('#subcategory').append(new Option(sub,sub));
 
 });
+
+});
+
+
+$('#subcategory').change(function(){
+
+var sub = $(this).val();
+
+if(sub=="Credit Card Payment")
+$("#creditCardField").removeClass("hidden");
+else
+$("#creditCardField").addClass("hidden");
+
+
+if(sub=="Loan EMI")
+$("#emiField").removeClass("hidden");
+else
+$("#emiField").addClass("hidden");
+
+});
+
+
+$('#type').change(function(){
+
+var type = $(this).val();
+
+if(type=="Income"){
+
+$("#fromField").hide();
+$("#toField").show();
+
+}
+
+else if(type=="Expense"){
+
+$("#fromField").show();
+$("#toField").hide();
+
+}
+
+else{
+
+$("#fromField").show();
+$("#toField").show();
+
+}
 
 });
 
