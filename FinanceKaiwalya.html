@@ -10,42 +10,69 @@
 <style>
 
 body{
-font-family:Arial;
-background:#f4f6f8;
+font-family: 'Segoe UI', sans-serif;
+background:#0f172a;
+color:white;
+margin:0;
 padding:20px;
 }
 
 .container{
 max-width:420px;
 margin:auto;
-background:white;
+}
+
+.card{
+background:#1e293b;
 padding:20px;
-border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,0.1);
+border-radius:16px;
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
 }
 
 h2{
 text-align:center;
+margin-bottom:20px;
 }
 
-input,select,textarea,button{
+label{
+font-size:13px;
+color:#cbd5f5;
+}
+
+input,select,textarea{
 width:100%;
-padding:10px;
-margin-top:10px;
-border-radius:6px;
-border:1px solid #ccc;
-font-size:14px;
+padding:12px;
+margin-top:6px;
+margin-bottom:14px;
+border-radius:10px;
+border:none;
+background:#334155;
+color:white;
+}
+
+input:focus,select:focus{
+outline:none;
+background:#475569;
 }
 
 button{
-background:#007bff;
-color:white;
+width:100%;
+padding:14px;
+background:#3b82f6;
 border:none;
+border-radius:12px;
+font-size:16px;
+color:white;
 cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#2563eb;
 }
 
 button:disabled{
-background:#999;
+background:#64748b;
 }
 
 .hidden{
@@ -53,16 +80,16 @@ display:none;
 }
 
 #status{
-margin-top:10px;
 text-align:center;
+margin-top:10px;
 font-size:14px;
 }
 
-#version{
+.footer{
 margin-top:15px;
-font-size:12px;
+font-size:11px;
 text-align:center;
-color:#777;
+color:#94a3b8;
 }
 
 </style>
@@ -73,30 +100,24 @@ color:#777;
 
 <div class="container">
 
-<h2>Transaction Entry</h2>
+<div class="card">
+
+<h2>Finance Tracker</h2>
 
 <form id="transactionForm">
 
 <label>Date</label>
 <input type="date" id="date" required>
 
+
 <label>Transaction Type</label>
 
-<select id="transactionType" required>
-
+<select id="type" required>
 <option value="">Select</option>
-<option>Income</option>
-<option>Expense</option>
-<option>Self Transfer</option>
-<option>Receivable</option>
-<option>Payable</option>
-<option>EMI Payment</option>
-<option>Credit Card Payment</option>
-
+<option value="Income">Income</option>
+<option value="Expense">Expense</option>
 </select>
 
-
-<!-- INCOME SECTION -->
 
 <div id="incomeSection" class="hidden">
 
@@ -104,7 +125,7 @@ color:#777;
 
 <select id="incomeCategory">
 
-<option value="">Select Category</option>
+<option value="">Select</option>
 <option>Primary Income</option>
 <option>Investment Income</option>
 <option>Cashback/Rewards</option>
@@ -112,26 +133,9 @@ color:#777;
 
 </select>
 
-
-<label>Income Amount (INR)</label>
-<input type="number" id="incomeAmount" min="1" step="0.01">
-
-
-<label>Mode of Transaction</label>
-
-<select id="incomeMode">
-
-<option value="">Select Mode</option>
-<option>UPI</option>
-<option>Cash</option>
-<option>Bank Transfer</option>
-
-</select>
-
-
 <label>Credited To</label>
 
-<select id="creditedTo">
+<select id="incomeAccount">
 
 <option value="">Select</option>
 <option>SBI Bank</option>
@@ -143,18 +147,11 @@ color:#777;
 
 </select>
 
-
-<div id="walletDescription" class="hidden">
-
-<label>Wallet Name</label>
-<textarea id="incomeDescription"></textarea>
+<textarea id="incomeDescription"
+placeholder="Wallet name if Digital Wallet"></textarea>
 
 </div>
 
-</div>
-
-
-<!-- EXPENSE SECTION -->
 
 <div id="expenseSection" class="hidden">
 
@@ -162,7 +159,7 @@ color:#777;
 
 <select id="expenseCategory">
 
-<option value="">Select Category</option>
+<option value="">Select</option>
 <option>Housing / Living</option>
 <option>Food & Groceries</option>
 <option>Transportation</option>
@@ -177,50 +174,47 @@ color:#777;
 
 </select>
 
+<label>Expense Sub Category</label>
 
-<label>Expense Sub-Category</label>
-<select id="expenseSubCategory"></select>
+<select id="expenseSub"></select>
 
+<label>Account</label>
 
-<label>Amount (INR)</label>
-<input type="number" id="expenseAmount" min="1">
-
-
-<label>Mode of Transaction</label>
-
-<select id="expenseMode">
+<select id="expenseAccount">
 
 <option value="">Select</option>
-<option>Bank Transfer</option>
+<option>SBI Bank</option>
+<option>Jupiter Bank</option>
+<option>HDFC Bank</option>
+<option>Kotak Bank</option>
 <option>Cash</option>
-<option>Debit Card</option>
-<option>Credit Card</option>
+<option>Kotak Dream CC</option>
+<option>Suryoday Bank Credit Card</option>
+<option>PhonePe Wish Card</option>
 
 </select>
 
-
-<label>Debited From</label>
-<select id="expenseAccount"></select>
-
-
-<label>Additional Description</label>
-<textarea id="expenseDescription"></textarea>
+<textarea id="expenseDescription"
+placeholder="Optional description"></textarea>
 
 </div>
 
 
-<button id="submitBtn" type="submit">Submit Transaction</button>
+<label>Amount (INR)</label>
+<input type="number" id="amount" min="1" required>
+
+
+<button id="submitBtn">Save Transaction</button>
 
 <div id="status"></div>
 
 </form>
 
+</div>
 
-<div id="version">
+<div class="footer">
 
-Last Updated: 11 Mar 2026  
-<br>
-Page Loaded: <span id="loadTime"></span>
+Finance Tracker • Last Updated 2026
 
 </div>
 
@@ -229,22 +223,19 @@ Page Loaded: <span id="loadTime"></span>
 
 <script>
 
-const scriptURL = "https://script.google.com/macros/s/AKfycbywPW8hrfem5Xq8InNK9aN_8BZzbty5FOkJpTnkbP0zZ6EReTWYPQSxZHffjiSEEPFE/exec";
+const scriptURL="YOUR_SCRIPT_URL";
 
-const form = document.getElementById("transactionForm");
-const typeSelect = document.getElementById("transactionType");
+const type=document.getElementById("type");
 
-const incomeSection = document.getElementById("incomeSection");
-const expenseSection = document.getElementById("expenseSection");
-
-const walletSection = document.getElementById("walletDescription");
+const incomeSection=document.getElementById("incomeSection");
+const expenseSection=document.getElementById("expenseSection");
 
 let locked=false;
 
 
-/* SHOW SECTIONS */
+/* show sections */
 
-typeSelect.addEventListener("change",function(){
+type.addEventListener("change",function(){
 
 incomeSection.classList.add("hidden");
 expenseSection.classList.add("hidden");
@@ -260,82 +251,23 @@ expenseSection.classList.remove("hidden");
 });
 
 
-/* WALLET DESCRIPTION RULE */
+/* sub category mapping */
 
-document.getElementById("creditedTo")
-.addEventListener("change",function(){
-
-if(this.value==="Digital Wallet"){
-
-walletSection.classList.remove("hidden");
-
-}else{
-
-walletSection.classList.add("hidden");
-
-}
-
-});
-
-
-/* EXPENSE CATEGORY MAP */
-
-const expenseMap={
+const subMap={
 
 "Housing / Living":[
-"Rent","Maintenance","Electricity Bill","Water Bill",
-"Gas Cylinder","Internet / Broadband","Mobile Recharge",
-"House Repairs","Furniture"
+"Rent","Maintenance","Electricity Bill","Water Bill","Gas Cylinder",
+"Internet / Broadband","Mobile Recharge","House Repairs","Furniture"
 ],
 
 "Food & Groceries":[
-"Groceries","Fruits & Vegetables","Dairy Products",
-"Snacks","Dining Out","Online Food Orders"
+"Groceries","Fruits & Vegetables","Dairy Products","Snacks",
+"Dining Out","Online Food Orders"
 ],
 
 "Transportation":[
-"Fuel / Petrol","Public Transport","Cab / Auto",
-"Bike Maintenance","Car Maintenance",
-"Parking Charges","Toll Charges"
-],
-
-"Health & Medical":[
-"Doctor Consultation","Medicines","Medical Tests",
-"Health Insurance","Supplements / Vitamins","Gym / Fitness"
-],
-
-"Shopping / Lifestyle":[
-"Clothes","Shoes","Accessories","Electronics",
-"Personal Care","Salon / Grooming"
-],
-
-"Entertainment":[
-"Movies","OTT Subscriptions","Music Subscription",
-"Games","Outings","Events / Concerts"
-],
-
-"Education / Learning":[
-"Courses","Books","Certifications",
-"Workshops","Software Subscriptions"
-],
-
-"Family Support":[
-"Parents Support","Brother / Sister Support",
-"Household Contribution","Gifts for Family"
-],
-
-"Travel":[
-"Flight Tickets","Train Tickets","Hotel Booking",
-"Local Transport","Trip Activities"
-],
-
-"Business / Work Expenses":[
-"Office Supplies","Work Software","Internet for Work",
-"Marketing","Business Expenses"
-],
-
-"Miscellaneous":[
-"Donations","Penalties","Tips","Unexpected Expenses"
+"Fuel / Petrol","Public Transport","Cab / Auto","Bike Maintenance",
+"Car Maintenance","Parking Charges","Toll Charges"
 ]
 
 };
@@ -344,78 +276,27 @@ const expenseMap={
 document.getElementById("expenseCategory")
 .addEventListener("change",function(){
 
-const sub=document.getElementById("expenseSubCategory");
+const sub=document.getElementById("expenseSub");
 
 sub.innerHTML="";
 
-expenseMap[this.value].forEach(item=>{
-
-let option=document.createElement("option");
-
-option.text=item;
-
-sub.add(option);
-
-});
-
-});
-
-
-/* MODE BASED ACCOUNT RULE */
-
-document.getElementById("expenseMode")
-.addEventListener("change",function(){
-
-const account=document.getElementById("expenseAccount");
-
-account.innerHTML="";
-
-if(this.value==="Bank Transfer" || this.value==="Debit Card"){
-
-["SBI Bank","Jupiter Bank","HDFC Bank","Kotak Bank","Cash"]
-.forEach(a=>{
+(subMap[this.value]||[]).forEach(item=>{
 
 let o=document.createElement("option");
 
-o.text=a;
+o.text=item;
 
-account.add(o);
-
-});
-
-}
-
-if(this.value==="Cash"){
-
-let o=document.createElement("option");
-
-o.text="Cash";
-
-account.add(o);
-
-}
-
-if(this.value==="Credit Card"){
-
-["Kotak Dream CC","Suryoday Bank Credit Card","PhonePe Wish Card"]
-.forEach(a=>{
-
-let o=document.createElement("option");
-
-o.text=a;
-
-account.add(o);
+sub.add(o);
 
 });
-
-}
 
 });
 
 
-/* SUBMIT */
+/* submit */
 
-form.addEventListener("submit",function(e){
+document.getElementById("transactionForm")
+.addEventListener("submit",function(e){
 
 e.preventDefault();
 
@@ -425,31 +306,32 @@ locked=true;
 
 document.getElementById("submitBtn").disabled=true;
 
-document.getElementById("status").innerHTML="Saving...";
+document.getElementById("status").innerText="Saving...";
 
-navigator.geolocation.getCurrentPosition(function(position){
+navigator.geolocation.getCurrentPosition(function(pos){
 
 const payload={
 
 date:document.getElementById("date").value,
-
-transactionType:typeSelect.value,
+transactionType:type.value,
 
 incomeCategory:document.getElementById("incomeCategory").value,
-amount:document.getElementById("incomeAmount").value,
 
 expenseCategory:document.getElementById("expenseCategory").value,
-expenseSubCategory:document.getElementById("expenseSubCategory").value,
-expenseAmount:document.getElementById("expenseAmount").value,
+expenseSubCategory:document.getElementById("expenseSub").value,
 
-mode:document.getElementById("expenseMode").value || document.getElementById("incomeMode").value,
+amount:document.getElementById("amount").value,
 
-account:document.getElementById("expenseAccount").value || document.getElementById("creditedTo").value,
+account:
+document.getElementById("incomeAccount").value ||
+document.getElementById("expenseAccount").value,
 
-description:document.getElementById("expenseDescription").value || document.getElementById("incomeDescription").value,
+description:
+document.getElementById("incomeDescription").value ||
+document.getElementById("expenseDescription").value,
 
-latitude:position.coords.latitude,
-longitude:position.coords.longitude,
+latitude:pos.coords.latitude,
+longitude:pos.coords.longitude,
 
 time:new Date().toLocaleTimeString()
 
@@ -461,17 +343,13 @@ mode:"no-cors",
 body:JSON.stringify(payload)
 });
 
-form.reset();
+document.getElementById("status").innerText="Transaction Saved";
 
-document.getElementById("status").innerHTML="✅ Transaction Saved";
-
-});
+document.getElementById("transactionForm").reset();
 
 });
 
-
-document.getElementById("loadTime").innerText=
-new Date().toLocaleString();
+});
 
 </script>
 
