@@ -7,6 +7,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -16,15 +18,39 @@
 <style>
 
 body{
-font-family:Segoe UI;
-background:#f2f4f8;
-padding:30px;
+font-family:'Inter',sans-serif;
+background:#f5f7fb;
+margin:0;
+display:flex;
+flex-direction:column;
+min-height:100vh;
+}
+
+.header{
+text-align:center;
+padding:20px;
+font-size:16px;
+font-weight:500;
+color:#333;
+}
+
+#clock{
+font-weight:600;
+color:#0066ff;
 }
 
 .container{
+flex:1;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px;
+}
+
+.card{
 
 max-width:750px;
-margin:auto;
+width:100%;
 background:white;
 padding:30px;
 border-radius:12px;
@@ -38,7 +64,7 @@ margin-bottom:25px;
 }
 
 label{
-font-weight:600;
+font-weight:500;
 }
 
 input,select,textarea{
@@ -48,7 +74,7 @@ padding:10px;
 margin-top:6px;
 margin-bottom:18px;
 border-radius:6px;
-border:1px solid #ccc;
+border:1px solid #ddd;
 font-size:14px;
 
 }
@@ -67,37 +93,35 @@ cursor:pointer;
 }
 
 button:hover{
-
 background:#004bcc;
-
 }
 
 .row{
-
 display:flex;
 gap:15px;
-
 }
 
 .col{
-
 flex:1;
-
 }
 
 .hidden{
-
 display:none;
-
 }
 
 .success{
-
 text-align:center;
 color:green;
 font-weight:bold;
 display:none;
+margin-bottom:15px;
+}
 
+.footer{
+text-align:center;
+padding:15px;
+font-size:13px;
+color:#777;
 }
 
 </style>
@@ -106,7 +130,16 @@ display:none;
 
 <body>
 
+<div class="header">
+
+<div id="dayDate"></div>
+<div id="clock"></div>
+
+</div>
+
 <div class="container">
+
+<div class="card">
 
 <h2>Finance Transaction Entry</h2>
 
@@ -124,14 +157,14 @@ Transaction Saved Successfully
 </div>
 
 <div class="col">
-<label>Time</label>
-<input type="time" name="time" id="timeField">
+<label>Time (Now)</label>
+<input type="text" name="time" id="timeField" readonly>
 </div>
 
 </div>
 
-<label>Location</label>
-<input type="text" name="location">
+<label>Location (GPS)</label>
+<input type="text" name="location" id="locationField" readonly>
 
 <label>Transaction Type</label>
 
@@ -147,55 +180,43 @@ Transaction Saved Successfully
 </select>
 
 <label>Category</label>
-
 <select id="category" style="width:100%"></select>
 
 <label>Sub Category</label>
-
 <select id="subcategory" style="width:100%"></select>
 
 <label>Amount (₹)</label>
-
 <input type="number" name="amount" required>
 
 <div id="personField" class="hidden">
-
 <label>Person Name</label>
-
 <input type="text" name="person">
-
 </div>
 
 <div id="fromField">
-
 <label>From Account</label>
 
 <select name="from">
-
 <option>Cash</option>
 <option>SBI Bank</option>
 <option>Jupiter Bank</option>
 <option>HDFC Bank</option>
 <option>Kotak Bank</option>
 <option>IDFC Bank</option>
-
 </select>
 
 </div>
 
 <div id="toField">
-
 <label>To Account</label>
 
 <select name="to">
-
 <option>Cash</option>
 <option>SBI Bank</option>
 <option>Jupiter Bank</option>
 <option>HDFC Bank</option>
 <option>Kotak Bank</option>
 <option>IDFC Bank</option>
-
 </select>
 
 </div>
@@ -205,11 +226,9 @@ Transaction Saved Successfully
 <label>Credit Card</label>
 
 <select name="creditcard">
-
 <option>Suryoday Bank CC</option>
 <option>PhonePe Wish CC</option>
 <option>Kotak Dream CC</option>
-
 </select>
 
 </div>
@@ -219,18 +238,15 @@ Transaction Saved Successfully
 <label>EMI Name</label>
 
 <select name="emi">
-
 <option>HDFC Personal Loan</option>
 <option>iPhone EMI</option>
 <option>ExcelR Course EMI</option>
 <option>Bike Helmet EMI</option>
-
 </select>
 
 </div>
 
 <label>Description</label>
-
 <textarea name="notes"></textarea>
 
 <button type="submit">Save Transaction</button>
@@ -239,15 +255,57 @@ Transaction Saved Successfully
 
 </div>
 
+</div>
+
+<div class="footer">
+Copyright@KaiwalyaMuley
+</div>
 
 <script>
 
 $('#category').select2({placeholder:"Search Category"});
 $('#subcategory').select2({placeholder:"Search Sub Category"});
 
+function updateClock(){
 
-document.getElementById("timeField").value =
-new Date().toTimeString().slice(0,5);
+const now=new Date();
+
+const options={weekday:'long',year:'numeric',month:'long',day:'numeric'};
+
+document.getElementById("dayDate").innerHTML=
+now.toLocaleDateString('en-IN',options);
+
+document.getElementById("clock").innerHTML=
+now.toLocaleTimeString('en-IN');
+
+document.getElementById("timeField").value=
+now.toLocaleTimeString('en-IN');
+
+}
+
+setInterval(updateClock,1000);
+updateClock();
+
+
+function getLocation(){
+
+if(navigator.geolocation){
+
+navigator.geolocation.getCurrentPosition(function(position){
+
+let lat=position.coords.latitude;
+let lon=position.coords.longitude;
+
+document.getElementById("locationField").value=
+lat.toFixed(5)+", "+lon.toFixed(5);
+
+});
+
+}
+
+}
+
+getLocation();
 
 
 var data={
@@ -308,7 +366,6 @@ Expense:{
 
 };
 
-
 $('#type').change(function(){
 
 var type=$(this).val();
@@ -368,7 +425,6 @@ $("#personField").show();
 
 });
 
-
 $('#category').change(function(){
 
 var type=$('#type').val();
@@ -384,26 +440,21 @@ $('#subcategory').append(new Option(sub,sub));
 
 });
 
-
 $('#subcategory').change(function(){
 
 var sub=$(this).val();
 
 if(sub=="Credit Card Payment")
-
 $("#creditCardField").removeClass("hidden");
 else
 $("#creditCardField").addClass("hidden");
 
-
 if(sub=="Loan EMI")
-
 $("#emiField").removeClass("hidden");
 else
 $("#emiField").addClass("hidden");
 
 });
-
 
 $('#txnForm').submit(function(e){
 
@@ -421,9 +472,7 @@ this.reset();
 
 });
 
-
 </script>
 
 </body>
-
 </html>
