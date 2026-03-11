@@ -10,7 +10,7 @@
 <style>
 
 body{
-font-family: 'Segoe UI', sans-serif;
+font-family:'Segoe UI',sans-serif;
 background:#0f172a;
 color:white;
 margin:0;
@@ -25,8 +25,8 @@ margin:auto;
 .card{
 background:#1e293b;
 padding:20px;
-border-radius:16px;
-box-shadow:0 10px 30px rgba(0,0,0,0.4);
+border-radius:14px;
+box-shadow:0 10px 25px rgba(0,0,0,0.35);
 }
 
 h2{
@@ -50,45 +50,29 @@ background:#334155;
 color:white;
 }
 
-input:focus,select:focus{
-outline:none;
-background:#475569;
-}
-
 button{
 width:100%;
 padding:14px;
 background:#3b82f6;
 border:none;
-border-radius:12px;
+border-radius:10px;
 font-size:16px;
 color:white;
 cursor:pointer;
-transition:0.3s;
 }
 
 button:hover{
 background:#2563eb;
 }
 
-button:disabled{
-background:#64748b;
-}
-
 .hidden{
 display:none;
 }
 
-#status{
-text-align:center;
-margin-top:10px;
-font-size:14px;
-}
-
 .footer{
+text-align:center;
 margin-top:15px;
 font-size:11px;
-text-align:center;
 color:#94a3b8;
 }
 
@@ -104,104 +88,59 @@ color:#94a3b8;
 
 <h2>Finance Tracker</h2>
 
-<form id="transactionForm">
+<form id="form">
 
 <label>Date</label>
 <input type="date" id="date" required>
 
-
 <label>Transaction Type</label>
 
 <select id="type" required>
+
 <option value="">Select</option>
 <option value="Income">Income</option>
 <option value="Expense">Expense</option>
-</select>
-
-
-<div id="incomeSection" class="hidden">
-
-<label>Income Category</label>
-
-<select id="incomeCategory">
-
-<option value="">Select</option>
-<option>Primary Income</option>
-<option>Investment Income</option>
-<option>Cashback/Rewards</option>
-<option>Gifts / Unexpected Income</option>
+<option value="Transfer">Self Transfer</option>
 
 </select>
 
-<label>Credited To</label>
 
-<select id="incomeAccount">
+<div id="categorySection" class="hidden">
 
-<option value="">Select</option>
-<option>SBI Bank</option>
-<option>Jupiter Bank</option>
-<option>HDFC Bank</option>
-<option>Kotak Bank</option>
-<option>Digital Wallet</option>
-<option>Cash Account</option>
+<label>Category</label>
+<select id="category"></select>
 
-</select>
-
-<textarea id="incomeDescription"
-placeholder="Wallet name if Digital Wallet"></textarea>
+<label>Sub Category</label>
+<select id="subcategory"></select>
 
 </div>
 
 
-<div id="expenseSection" class="hidden">
-
-<label>Expense Category</label>
-
-<select id="expenseCategory">
-
-<option value="">Select</option>
-<option>Housing / Living</option>
-<option>Food & Groceries</option>
-<option>Transportation</option>
-<option>Health & Medical</option>
-<option>Shopping / Lifestyle</option>
-<option>Entertainment</option>
-<option>Education / Learning</option>
-<option>Family Support</option>
-<option>Travel</option>
-<option>Business / Work Expenses</option>
-<option>Miscellaneous</option>
-
-</select>
-
-<label>Expense Sub Category</label>
-
-<select id="expenseSub"></select>
+<div id="accountSection" class="hidden">
 
 <label>Account</label>
+<select id="account"></select>
 
-<select id="expenseAccount">
+</div>
 
-<option value="">Select</option>
-<option>SBI Bank</option>
-<option>Jupiter Bank</option>
-<option>HDFC Bank</option>
-<option>Kotak Bank</option>
-<option>Cash</option>
-<option>Kotak Dream CC</option>
-<option>Suryoday Bank Credit Card</option>
-<option>PhonePe Wish Card</option>
 
-</select>
+<div id="transferSection" class="hidden">
 
-<textarea id="expenseDescription"
-placeholder="Optional description"></textarea>
+<label>From Account</label>
+<select id="fromAccount"></select>
+
+<label>To Account</label>
+<select id="toAccount"></select>
 
 </div>
 
 
 <label>Amount (INR)</label>
 <input type="number" id="amount" min="1" required>
+
+
+<label>Description</label>
+<textarea id="description"></textarea>
 
 
 <button id="submitBtn">Save Transaction</button>
@@ -213,9 +152,7 @@ placeholder="Optional description"></textarea>
 </div>
 
 <div class="footer">
-
-Finance Tracker • Last Updated 2026
-
+Finance Tracker
 </div>
 
 </div>
@@ -223,69 +160,127 @@ Finance Tracker • Last Updated 2026
 
 <script>
 
-const scriptURL="YOUR_SCRIPT_URL";
+/* CATEGORY MAP */
+
+const incomeCategories={
+"Salary":["Salary","Bonus","Incentives","Overtime"],
+"Freelance":["Freelance Projects","Consulting","Part Time Work","Online Services"],
+"Investment":["Stock Dividends","Mutual Fund Dividends","FD Interest","Savings Account Interest","Bond Interest"],
+"Rental":["Rent Received","Parking Rent"],
+"Rewards":["Credit Card Cashback","UPI Cashback","Reward Points Redemption"],
+"Refund":["Purchase Refund","Expense Reimbursement","Insurance Claim","Tax Refund"],
+"Gift":["Gifts Received","Family Support","Prize / Lottery"],
+"Other":["Miscellaneous Income"]
+};
+
+const expenseCategories={
+"Housing":["Rent","Maintenance Charges","Electricity Bill","Water Bill","Gas Cylinder","House Repairs","Furniture"],
+"Utilities":["Mobile Recharge","Internet / Broadband","Software Subscription"],
+"Food":["Groceries","Fruits & Vegetables","Dairy Products","Snacks","Dining Out","Online Food Orders"],
+"Transportation":["Fuel","Public Transport","Cab / Auto","Parking Charges","Toll Charges","Bike Maintenance","Car Maintenance"],
+"Health":["Doctor Consultation","Medicines","Medical Tests","Health Insurance","Supplements","Gym / Fitness"],
+"Shopping":["Clothes","Shoes","Accessories","Electronics","Personal Care","Salon / Grooming"],
+"Entertainment":["Movies","OTT Subscriptions","Music Subscription","Games","Outings"],
+"Education":["Courses","Books","Certifications","Workshops"],
+"Financial":["Credit Card Payment","Loan EMI","Interest Paid","Bank Charges","Late Fees"],
+"Family":["Parents Support","Brother Support","Family Gifts"],
+"Travel":["Flight Tickets","Train Tickets","Hotel Booking","Local Transport","Trip Activities"],
+"Business":["Office Supplies","Marketing","Work Software","Business Expenses"],
+"Donation":["Charity","Religious Donations"],
+"Other":["Miscellaneous Expense","Unexpected Expense","Penalties","Tips"]
+};
+
+
+/* ACCOUNTS */
+
+const accounts=[
+"SBI Bank",
+"Jupiter Bank",
+"HDFC Bank",
+"Kotak Bank",
+"IDFC Bank",
+"Suryoday Bank CC",
+"PhonePe Wish CC",
+"Kotak Dream CC"
+];
+
+
+/* ELEMENTS */
 
 const type=document.getElementById("type");
+const category=document.getElementById("category");
+const sub=document.getElementById("subcategory");
 
-const incomeSection=document.getElementById("incomeSection");
-const expenseSection=document.getElementById("expenseSection");
+const categorySection=document.getElementById("categorySection");
+const accountSection=document.getElementById("accountSection");
+const transferSection=document.getElementById("transferSection");
 
-let locked=false;
 
+/* TYPE CHANGE */
 
-/* show sections */
+type.addEventListener("change",()=>{
 
-type.addEventListener("change",function(){
+categorySection.classList.add("hidden");
+accountSection.classList.add("hidden");
+transferSection.classList.add("hidden");
 
-incomeSection.classList.add("hidden");
-expenseSection.classList.add("hidden");
+category.innerHTML="";
+sub.innerHTML="";
 
-if(this.value==="Income"){
-incomeSection.classList.remove("hidden");
+if(type.value==="Income"){
+
+categorySection.classList.remove("hidden");
+accountSection.classList.remove("hidden");
+
+Object.keys(incomeCategories).forEach(c=>{
+let o=document.createElement("option");
+o.text=c;
+category.add(o);
+});
+
+populateAccounts("account");
+
 }
 
-if(this.value==="Expense"){
-expenseSection.classList.remove("hidden");
+if(type.value==="Expense"){
+
+categorySection.classList.remove("hidden");
+accountSection.classList.remove("hidden");
+
+Object.keys(expenseCategories).forEach(c=>{
+let o=document.createElement("option");
+o.text=c;
+category.add(o);
+});
+
+populateAccounts("account");
+
+}
+
+if(type.value==="Transfer"){
+
+transferSection.classList.remove("hidden");
+
+populateAccounts("fromAccount");
+populateAccounts("toAccount");
+
 }
 
 });
 
 
-/* sub category mapping */
+/* SUB CATEGORY */
 
-const subMap={
-
-"Housing / Living":[
-"Rent","Maintenance","Electricity Bill","Water Bill","Gas Cylinder",
-"Internet / Broadband","Mobile Recharge","House Repairs","Furniture"
-],
-
-"Food & Groceries":[
-"Groceries","Fruits & Vegetables","Dairy Products","Snacks",
-"Dining Out","Online Food Orders"
-],
-
-"Transportation":[
-"Fuel / Petrol","Public Transport","Cab / Auto","Bike Maintenance",
-"Car Maintenance","Parking Charges","Toll Charges"
-]
-
-};
-
-
-document.getElementById("expenseCategory")
-.addEventListener("change",function(){
-
-const sub=document.getElementById("expenseSub");
+category.addEventListener("change",()=>{
 
 sub.innerHTML="";
 
-(subMap[this.value]||[]).forEach(item=>{
+let map=(type.value==="Income") ? incomeCategories : expenseCategories;
+
+(map[category.value]||[]).forEach(s=>{
 
 let o=document.createElement("option");
-
-o.text=item;
-
+o.text=s;
 sub.add(o);
 
 });
@@ -293,20 +288,28 @@ sub.add(o);
 });
 
 
-/* submit */
+function populateAccounts(id){
 
-document.getElementById("transactionForm")
-.addEventListener("submit",function(e){
+let el=document.getElementById(id);
+
+el.innerHTML="";
+
+accounts.forEach(a=>{
+let o=document.createElement("option");
+o.text=a;
+el.add(o);
+});
+
+}
+
+
+/* SUBMIT */
+
+document.getElementById("form").addEventListener("submit",function(e){
 
 e.preventDefault();
 
-if(locked) return;
-
-locked=true;
-
 document.getElementById("submitBtn").disabled=true;
-
-document.getElementById("status").innerText="Saving...";
 
 navigator.geolocation.getCurrentPosition(function(pos){
 
@@ -315,29 +318,24 @@ const payload={
 date:document.getElementById("date").value,
 transactionType:type.value,
 
-incomeCategory:document.getElementById("incomeCategory").value,
+category:category.value,
+subcategory:sub.value,
 
-expenseCategory:document.getElementById("expenseCategory").value,
-expenseSubCategory:document.getElementById("expenseSub").value,
+account:document.getElementById("account")?.value,
+
+fromAccount:document.getElementById("fromAccount")?.value,
+toAccount:document.getElementById("toAccount")?.value,
 
 amount:document.getElementById("amount").value,
-
-account:
-document.getElementById("incomeAccount").value ||
-document.getElementById("expenseAccount").value,
-
-description:
-document.getElementById("incomeDescription").value ||
-document.getElementById("expenseDescription").value,
+description:document.getElementById("description").value,
 
 latitude:pos.coords.latitude,
 longitude:pos.coords.longitude,
-
 time:new Date().toLocaleTimeString()
 
 };
 
-fetch(scriptURL,{
+fetch("YOUR_SCRIPT_URL",{
 method:"POST",
 mode:"no-cors",
 body:JSON.stringify(payload)
@@ -345,7 +343,7 @@ body:JSON.stringify(payload)
 
 document.getElementById("status").innerText="Transaction Saved";
 
-document.getElementById("transactionForm").reset();
+document.getElementById("form").reset();
 
 });
 
