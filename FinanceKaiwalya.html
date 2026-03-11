@@ -102,6 +102,7 @@
         }
 
         .btn-submit:hover { background: var(--primary-hover); }
+        .btn-submit:disabled { background: #cbd5e1; cursor: not-allowed; }
 
         .toast {
             position: fixed;
@@ -113,6 +114,7 @@
             display: none;
             font-weight: 600;
             z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .hidden { display: none !important; }
@@ -141,7 +143,7 @@
                 </div>
                 <div class="form-group">
                     <label>Amount (₹)</label>
-                    <input type="number" name="amount" placeholder="0.00" required>
+                    <input type="number" name="amount" placeholder="0.00" step="0.01" required>
                 </div>
             </div>
 
@@ -201,6 +203,7 @@
             <div id="loanWrapper" class="form-group hidden">
                 <label>Select Loan / EMI</label>
                 <select name="emi">
+                    <option value="">Select EMI</option>
                     <option>HDFC Personal Loan</option>
                     <option>iPhone EMI</option>
                     <option>ExcelR Course EMI</option>
@@ -221,6 +224,7 @@
                 <div id="toField" class="form-group hidden">
                     <label>To Account</label>
                     <select id="toAccount" name="to">
+                        <option value="">Select To</option>
                         <option>Cash</option>
                         <option>SBI Bank</option>
                         <option>Jupiter Bank</option>
@@ -236,7 +240,7 @@
                 <textarea name="notes" rows="2" placeholder="Notes..."></textarea>
             </div>
 
-            <button type="submit" class="btn-submit">Save Transaction</button>
+            <button type="submit" id="submitBtn" class="btn-submit">Save Transaction</button>
         </form>
     </div>
     <div class="footer">Copyright @ KaiwalyaMuley</div>
@@ -297,7 +301,6 @@
             });
         }
 
-        // --- Logic for Mode of Payment Filtering ---
         $('#modeOfPayment').change(function() {
             const mode = $(this).val();
             const fromAcc = $('#fromAccount');
@@ -318,11 +321,8 @@
             if (mode === "Cash") fromAcc.val("Cash").trigger('change');
         });
 
-        // --- Logic for Transaction Type ---
         $('#type').change(function() {
             const type = $(this).val();
-            
-            // Reset fields
             $('#categorySection, #modeWrapper, #fromField, #toField, #personField, #ccWrapper, #loanWrapper').addClass('hidden');
             $('#category').empty().append('<option value="">Select Category</option>');
             $('#subcategory').empty();
@@ -334,7 +334,6 @@
                 Object.keys(transactionData[type] || {}).forEach(cat => $('#category').append(new Option(cat, cat)));
             }
 
-            // Field Visibility Matrix
             if (type === "Income") {
                 $('#toField').removeClass('hidden');
             } else if (type === "Expense") {
@@ -375,12 +374,31 @@
             $('#ccLimit').val(limit ? "₹ " + limit : "");
         });
 
+        // --- GOOGLE APPS SCRIPT SUBMISSION LOGIC ---
         $('#txnForm').submit(function(e) {
             e.preventDefault();
-            $('#successToast').fadeIn().delay(2000).fadeOut();
-            this.reset();
-            $('#type, #category, #subcategory, #ccSelect, #modeOfPayment, #fromAccount, #toAccount').val(null).trigger('change');
-            updateClock();
+            
+            const submitBtn = $('#submitBtn');
+            submitBtn.text("Saving...").prop('disabled', true);
+
+            // This calls the processForm function in your Code.gs
+            google.script.run
+                .withSuccessHandler(function(response) {
+                    $('#successToast').fadeIn().delay(2000).fadeOut();
+                    
+                    // Reset Form
+                    $('#txnForm')[0].reset();
+                    $('#type, #category, #subcategory, #ccSelect, #modeOfPayment, #fromAccount, #toAccount')
+                        .val(null).trigger('change');
+                    
+                    submitBtn.text("Save Transaction").prop('disabled', false);
+                    updateClock();
+                })
+                .withFailureHandler(function(error) {
+                    alert("Submission failed: " + error.message);
+                    submitBtn.text("Save Transaction").prop('disabled', false);
+                })
+                .processForm(this);
         });
     });
 </script>
