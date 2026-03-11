@@ -23,7 +23,7 @@
             --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
         }
 
-        * { box-sizing: border-box; transition: all 0.2s ease; }
+        * { box-sizing: border-box; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -55,23 +55,19 @@
 
         .app-header h2 { margin: 0; font-size: 20px; font-weight: 700; color: var(--primary); }
         
-        #clock-info {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-top: 5px;
-        }
+        #clock-info { font-size: 13px; color: var(--text-muted); margin-top: 5px; }
 
         .form-content { padding: 25px 30px; }
-
         .form-group { margin-bottom: 20px; }
 
         label {
             display: block;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             color: var(--text-muted);
             margin-bottom: 6px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         input, select, textarea {
@@ -83,11 +79,10 @@
             background: #fcfdfe;
         }
 
-        input:focus { border-color: var(--primary); outline: none; background: #fff; }
+        input:focus { border-color: var(--primary); outline: none; background: #fff; box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1); }
 
         .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
-        /* Select2 Modern Overrides */
         .select2-container--default .select2-selection--single {
             height: 44px;
             border: 1px solid var(--border-color);
@@ -109,7 +104,7 @@
             margin-top: 10px;
         }
 
-        .btn-submit:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-submit:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2); }
 
         .toast {
             position: fixed;
@@ -120,10 +115,11 @@
             border-radius: 50px;
             display: none;
             font-weight: 600;
+            z-index: 1000;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .hidden { display: none; }
+        .hidden { display: none !important; }
         .footer { text-align: center; padding: 20px; font-size: 11px; color: var(--text-muted); }
 
         @media (max-width: 480px) { .row { grid-template-columns: 1fr; } }
@@ -169,7 +165,7 @@
                 </select>
             </div>
 
-            <div class="row">
+            <div id="categorySection" class="row">
                 <div class="form-group">
                     <label>Category</label>
                     <select id="category" name="category" style="width:100%"></select>
@@ -244,7 +240,6 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
-    // Full Data Object including all your categories
     const transactionData = {
         Income: {
             "Salary": ["Salary", "Bonus", "Incentives", "Overtime"],
@@ -288,16 +283,23 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Background Location Fetching
         if(navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(p => {
                 $('#locationField').val(p.coords.latitude.toFixed(5) + ", " + p.coords.longitude.toFixed(5));
             });
         }
 
-        // Dropdown Logic
         $('#type').change(function() {
             const type = $(this).val();
+            
+            // Toggle Category Section Visibility
+            if (type === "Self Transfer") {
+                $('#categorySection').addClass('hidden');
+                $('#category').val(null).trigger('change');
+            } else {
+                $('#categorySection').removeClass('hidden');
+            }
+
             $('#category').empty().append('<option value="">Select Category</option>');
             $('#subcategory').empty();
 
@@ -307,7 +309,6 @@
                 });
             }
 
-            // Field visibility
             $("#fromField, #toField, #personField").hide();
             if(type === "Income") $("#toField").show();
             else if(type === "Expense") $("#fromField").show();
@@ -327,8 +328,8 @@
 
         $('#subcategory').change(function() {
             const sub = $(this).val();
-            sub === "Credit Card Payment" ? $("#creditCardField").show() : $("#creditCardField").hide();
-            sub === "Loan EMI" ? $("#emiField").show() : $("#emiField").hide();
+            sub === "Credit Card Payment" ? $("#creditCardField").removeClass('hidden') : $("#creditCardField").addClass('hidden');
+            sub === "Loan EMI" ? $("#emiField").removeClass('hidden') : $("#emiField").addClass('hidden');
         });
 
         $('#txnForm').submit(function(e) {
@@ -336,6 +337,7 @@
             $('#successToast').fadeIn().delay(2000).fadeOut();
             this.reset();
             $('#type').val('').trigger('change');
+            updateClock();
         });
     });
 </script>
