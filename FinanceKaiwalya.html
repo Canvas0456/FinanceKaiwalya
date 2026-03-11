@@ -23,7 +23,7 @@
             --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
         }
 
-        * { box-sizing: border-box; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        * { box-sizing: border-box; transition: all 0.2s ease; }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -48,7 +48,7 @@
 
         .app-header {
             background: #fff;
-            padding: 25px 30px;
+            padding: 20px 30px;
             border-bottom: 1px solid var(--border-color);
             text-align: center;
         }
@@ -58,7 +58,7 @@
         #clock-info { font-size: 13px; color: var(--text-muted); margin-top: 5px; }
 
         .form-content { padding: 25px 30px; }
-        .form-group { margin-bottom: 20px; }
+        .form-group { margin-bottom: 18px; }
 
         label {
             display: block;
@@ -67,7 +67,6 @@
             color: var(--text-muted);
             margin-bottom: 6px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         input, select, textarea {
@@ -78,8 +77,6 @@
             font-size: 14px;
             background: #fcfdfe;
         }
-
-        input:focus { border-color: var(--primary); outline: none; background: #fff; box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1); }
 
         .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
@@ -104,7 +101,7 @@
             margin-top: 10px;
         }
 
-        .btn-submit:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2); }
+        .btn-submit:hover { background: var(--primary-hover); }
 
         .toast {
             position: fixed;
@@ -116,13 +113,10 @@
             display: none;
             font-weight: 600;
             z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .hidden { display: none !important; }
         .footer { text-align: center; padding: 20px; font-size: 11px; color: var(--text-muted); }
-
-        @media (max-width: 480px) { .row { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -132,9 +126,7 @@
 <div class="app-card">
     <div class="app-header">
         <h2>Finance Entry</h2>
-        <div id="clock-info">
-            <span id="dayDate"></span> • <span id="clock"></span>
-        </div>
+        <div id="clock-info"><span id="dayDate"></span> • <span id="clock"></span></div>
     </div>
 
     <div class="form-content">
@@ -144,7 +136,7 @@
 
             <div class="row">
                 <div class="form-group">
-                    <label>Transaction Date</label>
+                    <label>Date</label>
                     <input type="date" name="date" id="dateField" required>
                 </div>
                 <div class="form-group">
@@ -176,12 +168,40 @@
                 </div>
             </div>
 
+            <div id="ccWrapper" class="hidden">
+                <div class="row">
+                    <div class="form-group">
+                        <label>Credit Card Name</label>
+                        <select id="ccSelect" name="creditcard">
+                            <option value="">Select Card</option>
+                            <option value="4500">Suryoday Bank CC</option>
+                            <option value="4500">PhonePe Wish CC</option>
+                            <option value="9000">Kotak Dream CC</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Credit Limit (₹)</label>
+                        <input type="text" id="ccLimit" readonly style="background: #edf2f7;">
+                    </div>
+                </div>
+            </div>
+
+            <div id="loanWrapper" class="form-group hidden">
+                <label>Select Loan / EMI</label>
+                <select name="emi">
+                    <option>HDFC Personal Loan</option>
+                    <option>iPhone EMI</option>
+                    <option>ExcelR Course EMI</option>
+                    <option>Bike Helmet EMI</option>
+                </select>
+            </div>
+
             <div id="personField" class="form-group hidden">
                 <label>Person Name</label>
                 <input type="text" name="person" placeholder="Enter name">
             </div>
 
-            <div class="row" id="accountRow">
+            <div class="row">
                 <div id="fromField" class="form-group">
                     <label>From Account</label>
                     <select name="from">
@@ -206,28 +226,9 @@
                 </div>
             </div>
 
-            <div id="creditCardField" class="form-group hidden">
-                <label>Select Credit Card</label>
-                <select name="creditcard">
-                    <option>Suryoday Bank CC</option>
-                    <option>PhonePe Wish CC</option>
-                    <option>Kotak Dream CC</option>
-                </select>
-            </div>
-
-            <div id="emiField" class="form-group hidden">
-                <label>EMI Details</label>
-                <select name="emi">
-                    <option>HDFC Personal Loan</option>
-                    <option>iPhone EMI</option>
-                    <option>ExcelR Course EMI</option>
-                    <option>Bike Helmet EMI</option>
-                </select>
-            </div>
-
             <div class="form-group">
-                <label>Description / Notes</label>
-                <textarea name="notes" rows="2" placeholder="Note down specifics..."></textarea>
+                <label>Description</label>
+                <textarea name="notes" rows="2" placeholder="Notes..."></textarea>
             </div>
 
             <button type="submit" class="btn-submit">Save Transaction</button>
@@ -271,7 +272,7 @@
     };
 
     $(document).ready(function() {
-        $('#category, #subcategory').select2();
+        $('#category, #subcategory, #ccSelect').select2();
 
         function updateClock() {
             const now = new Date();
@@ -280,8 +281,7 @@
             $('#timeField').val(now.toLocaleTimeString('en-IN'));
             if(!$('#dateField').val()) $('#dateField').val(now.toISOString().split('T')[0]);
         }
-        setInterval(updateClock, 1000);
-        updateClock();
+        setInterval(updateClock, 1000); updateClock();
 
         if(navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(p => {
@@ -291,22 +291,16 @@
 
         $('#type').change(function() {
             const type = $(this).val();
-            
-            // Toggle Category Section Visibility
             if (type === "Self Transfer") {
                 $('#categorySection').addClass('hidden');
-                $('#category').val(null).trigger('change');
             } else {
                 $('#categorySection').removeClass('hidden');
             }
 
             $('#category').empty().append('<option value="">Select Category</option>');
             $('#subcategory').empty();
-
             if(transactionData[type]) {
-                Object.keys(transactionData[type]).forEach(cat => {
-                    $('#category').append(new Option(cat, cat));
-                });
+                Object.keys(transactionData[type]).forEach(cat => $('#category').append(new Option(cat, cat)));
             }
 
             $("#fromField, #toField, #personField").hide();
@@ -315,12 +309,15 @@
             else if(type === "Self Transfer") { $("#fromField, #toField").show(); }
             else if(type === "Receivable") { $("#toField, #personField").show(); }
             else if(type === "Payable") { $("#fromField, #personField").show(); }
+            
+            // Reset dynamic sub-fields
+            $('#ccWrapper, #loanWrapper').addClass('hidden');
         });
 
         $('#category').change(function() {
             const type = $('#type').val();
             const cat = $(this).val();
-            $('#subcategory').empty();
+            $('#subcategory').empty().append('<option value="">Select Sub Category</option>');
             if(transactionData[type] && transactionData[type][cat]) {
                 transactionData[type][cat].forEach(sub => $('#subcategory').append(new Option(sub, sub)));
             }
@@ -328,19 +325,35 @@
 
         $('#subcategory').change(function() {
             const sub = $(this).val();
-            sub === "Credit Card Payment" ? $("#creditCardField").removeClass('hidden') : $("#creditCardField").addClass('hidden');
-            sub === "Loan EMI" ? $("#emiField").removeClass('hidden') : $("#emiField").addClass('hidden');
+            // Credit Card Logic
+            if(sub === "Credit Card Payment") {
+                $('#ccWrapper').removeClass('hidden');
+                $('#loanWrapper').addClass('hidden');
+            } 
+            // Loan Logic
+            else if (sub === "Loan EMI") {
+                $('#loanWrapper').removeClass('hidden');
+                $('#ccWrapper').addClass('hidden');
+            }
+            else {
+                $('#ccWrapper, #loanWrapper').addClass('hidden');
+            }
+        });
+
+        // Update Credit Limit display
+        $('#ccSelect').change(function() {
+            const limit = $(this).val();
+            $('#ccLimit').val(limit ? "₹ " + limit : "");
         });
 
         $('#txnForm').submit(function(e) {
             e.preventDefault();
             $('#successToast').fadeIn().delay(2000).fadeOut();
             this.reset();
-            $('#type').val('').trigger('change');
+            $('#type, #category, #subcategory, #ccSelect').val(null).trigger('change');
             updateClock();
         });
     });
 </script>
-
 </body>
 </html>
