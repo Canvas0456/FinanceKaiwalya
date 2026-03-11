@@ -351,7 +351,6 @@
             $('#ccLimit').val(limit ? "₹ " + limit : "");
         });
 
-        // GOOGLE APPS SCRIPT SUBMIT
         $('#txnForm').submit(function(e) {
             e.preventDefault();
             const submitBtn = $('#submitBtn');
@@ -366,7 +365,8 @@
                     updateClock();
                 })
                 .withFailureHandler(function(err) {
-                    alert("Error: " + err.message);
+                    // Added detailed error message
+                    alert("STUCK! Google Script Error: " + err.message);
                     submitBtn.text("Save Transaction").prop('disabled', false);
                 })
                 .processForm(this);
