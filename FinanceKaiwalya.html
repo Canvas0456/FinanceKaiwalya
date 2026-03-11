@@ -54,7 +54,6 @@
         }
 
         .app-header h2 { margin: 0; font-size: 20px; font-weight: 700; color: var(--primary); }
-        
         #clock-info { font-size: 13px; color: var(--text-muted); margin-top: 5px; }
 
         .form-content { padding: 25px 30px; }
@@ -114,7 +113,7 @@
             display: none;
             font-weight: 600;
             z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .hidden { display: none !important; }
@@ -219,12 +218,12 @@
             <div class="row">
                 <div id="fromField" class="form-group hidden">
                     <label>From Account</label>
-                    <select id="fromAccount" name="from"></select>
+                    <select id="fromAccount" name="from" style="width:100%"></select>
                 </div>
                 <div id="toField" class="form-group hidden">
                     <label>To Account</label>
-                    <select id="toAccount" name="to">
-                        <option value="">Select To</option>
+                    <select id="toAccount" name="to" style="width:100%">
+                        <option value="">Select To Account</option>
                         <option>Cash</option>
                         <option>SBI Bank</option>
                         <option>Jupiter Bank</option>
@@ -305,18 +304,11 @@
             const mode = $(this).val();
             const fromAcc = $('#fromAccount');
             fromAcc.empty().append('<option value="">Select Account</option>');
-
             let options = [];
-            if (mode === "UPI") {
-                options = [...bankAccounts, ...creditCardAccounts];
-            } else if (mode === "Bank Transfer" || mode === "Debit Card") {
-                options = bankAccounts;
-            } else if (mode === "Cash") {
-                options = ["Cash"];
-            } else if (mode === "Credit Card") {
-                options = creditCardAccounts;
-            }
-
+            if (mode === "UPI") options = [...bankAccounts, ...creditCardAccounts];
+            else if (mode === "Bank Transfer" || mode === "Debit Card") options = bankAccounts;
+            else if (mode === "Cash") options = ["Cash"];
+            else if (mode === "Credit Card") options = creditCardAccounts;
             options.forEach(acc => fromAcc.append(new Option(acc, acc)));
             if (mode === "Cash") fromAcc.val("Cash").trigger('change');
         });
@@ -326,25 +318,16 @@
             $('#categorySection, #modeWrapper, #fromField, #toField, #personField, #ccWrapper, #loanWrapper').addClass('hidden');
             $('#category').empty().append('<option value="">Select Category</option>');
             $('#subcategory').empty();
-
             if (!type) return;
-
             if (type !== "Self Transfer") {
                 $('#categorySection').removeClass('hidden');
                 Object.keys(transactionData[type] || {}).forEach(cat => $('#category').append(new Option(cat, cat)));
             }
-
-            if (type === "Income") {
-                $('#toField').removeClass('hidden');
-            } else if (type === "Expense") {
-                $('#modeWrapper, #fromField').removeClass('hidden');
-            } else if (type === "Self Transfer") {
-                $('#modeWrapper, #fromField, #toField').removeClass('hidden');
-            } else if (type === "Receivable") {
-                $('#toField, #personField').removeClass('hidden');
-            } else if (type === "Payable") {
-                $('#modeWrapper, #fromField, #personField').removeClass('hidden');
-            }
+            if (type === "Income") $('#toField').removeClass('hidden');
+            else if (type === "Expense") $('#modeWrapper, #fromField').removeClass('hidden');
+            else if (type === "Self Transfer") $('#modeWrapper, #fromField, #toField').removeClass('hidden');
+            else if (type === "Receivable") $('#toField, #personField').removeClass('hidden');
+            else if (type === "Payable") $('#modeWrapper, #fromField, #personField').removeClass('hidden');
         });
 
         $('#category').change(function() {
@@ -358,15 +341,9 @@
 
         $('#subcategory').change(function() {
             const sub = $(this).val();
-            if(sub === "Credit Card Payment") {
-                $('#ccWrapper').removeClass('hidden');
-                $('#loanWrapper').addClass('hidden');
-            } else if (sub === "Loan EMI") {
-                $('#loanWrapper').removeClass('hidden');
-                $('#ccWrapper').addClass('hidden');
-            } else {
-                $('#ccWrapper, #loanWrapper').addClass('hidden');
-            }
+            if(sub === "Credit Card Payment") { $('#ccWrapper').removeClass('hidden'); $('#loanWrapper').addClass('hidden'); }
+            else if (sub === "Loan EMI") { $('#loanWrapper').removeClass('hidden'); $('#ccWrapper').addClass('hidden'); }
+            else { $('#ccWrapper, #loanWrapper').addClass('hidden'); }
         });
 
         $('#ccSelect').change(function() {
@@ -374,28 +351,22 @@
             $('#ccLimit').val(limit ? "₹ " + limit : "");
         });
 
-        // --- GOOGLE APPS SCRIPT SUBMISSION LOGIC ---
+        // GOOGLE APPS SCRIPT SUBMIT
         $('#txnForm').submit(function(e) {
             e.preventDefault();
-            
             const submitBtn = $('#submitBtn');
             submitBtn.text("Saving...").prop('disabled', true);
 
-            // This calls the processForm function in your Code.gs
             google.script.run
-                .withSuccessHandler(function(response) {
+                .withSuccessHandler(function(res) {
                     $('#successToast').fadeIn().delay(2000).fadeOut();
-                    
-                    // Reset Form
                     $('#txnForm')[0].reset();
-                    $('#type, #category, #subcategory, #ccSelect, #modeOfPayment, #fromAccount, #toAccount')
-                        .val(null).trigger('change');
-                    
+                    $('#type, #category, #subcategory, #ccSelect, #modeOfPayment, #fromAccount, #toAccount').val(null).trigger('change');
                     submitBtn.text("Save Transaction").prop('disabled', false);
                     updateClock();
                 })
-                .withFailureHandler(function(error) {
-                    alert("Submission failed: " + error.message);
+                .withFailureHandler(function(err) {
+                    alert("Error: " + err.message);
                     submitBtn.text("Save Transaction").prop('disabled', false);
                 })
                 .processForm(this);
